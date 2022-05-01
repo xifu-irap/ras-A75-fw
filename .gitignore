@@ -1,0 +1,6 @@
+ip/**/*.v
+ip/**/*.vhdl
+ip/**/*.xdc
+ip/**/*.dcp
+ip/**/*.xml
+ip/**/*.vhd

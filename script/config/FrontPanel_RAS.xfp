@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Test RAS signals 
+     Front Panel  -->
+
+<resource version="2.3.0.1">
+
+<object class="okPanel" name="panel1">
+	<title>RAS Signals</title>
+	<size>420,200</size>
+	
+<object class="okFilePipe"> -- PipeIn
+	<label>Storage Cmd</label>
+	<position>15,20</position>
+	<size>120,30</size>
+	<endpoint>0x80</endpoint>
+</object>
+	
+
+
+
+<object class="okTriggerButton">
+	<label>Trigger RAS signals reading</label>
+	<position>140,20</position>
+	<size>150,30</size>
+	<endpoint>0x40</endpoint>
+	<bit>0</bit>
+</object>
+
+
+<object class="okTriggerLog">
+	<position>20,60</position>
+	<size>370,100</size>
+	<trigger>
+		<endpoint>0x60</endpoint><bit>0</bit>
+		<message> Row driving signals are here :)</message>
+	</trigger>
+	<trigger>
+		<endpoint>0x60</endpoint><bit>1</bit>
+		<message> HK signals are here :)</message>
+	</trigger>
+</object>
+
+
+
+<!-- <object class="okPushbutton">
+<label>Soft Reset</label>
+<position>150,25</position>
+<size>60,20</size>
+<endpoint>0x00</endpoint>
+<bit>0</bit>
+</object> -->
+
+<object class="okFilePipe"> -- PipeOut
+	<label>Record RAS signals</label>
+	<position>150,170</position>
+	<size>150,30</size>
+	<endpoint>0xa0</endpoint>
+	<length>2048</length> --on récupère 1024 valeurs
+	<starttrigger><endpoint>0x40</endpoint><bit>0</bit></starttrigger> 
+</object>
+
+
+<object class="okFilePipe"> -- PipeOut
+	<label>Record HK</label>
+	<position>20,170</position>
+	<size>100,30</size>
+	<endpoint>0xa1</endpoint>
+	<length>16</length>
+</object>
+
+
+
+</object>
+
+</resource>
