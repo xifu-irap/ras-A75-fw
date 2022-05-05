@@ -104,7 +104,7 @@ entity row_addressing is
           sys_clkp : in std_logic;
 		  sys_clkn : in std_logic;
 
-          i_clk    : in std_logic;
+          o_clk    : out std_logic;
     ---------------------- RST -------------------------
           -- i_rst : in std_logic;
           
@@ -426,18 +426,14 @@ Cmd_DAC.start <= reception_DAC(0) ;
 
 --===========================================================
 
-clk_0 <= clk_200M ;
-clk_1 <= i_clk ;
-clk_2 <= sys_clk ;
-
 o_cluster_spare_1 <= '1' ;
 o_cluster_spare_2 <= '1' ;
 
-reset_generator: process(LOCKED, clk_200M)
+reset_generator: process(LOCKED, sys_clk)
 begin
   if (LOCKED = '0') then
     rst_gen <= (others => '1');
-  elsif rising_edge(clk_200M) then
+  elsif rising_edge(sys_clk) then
     -- keep internal reset active for at least <rstn_gen'size> clock cycles --
     rst_gen <= rst_gen(rst_gen'left-1 downto 0) & '0';
   end if;
@@ -454,11 +450,11 @@ s_rst <= rst_gen(rst_gen'left);
 MMCME2_BASE_inst : MMCME2_BASE
 generic map (
    BANDWIDTH => "OPTIMIZED",  -- Jitter programming (OPTIMIZED, HIGH, LOW)
-   CLKFBOUT_MULT_F => 16.0,    -- Multiply value for all CLKOUT (2.000-64.000).
+   CLKFBOUT_MULT_F => 5.0,    -- Multiply value for all CLKOUT (2.000-64.000).
    CLKFBOUT_PHASE => 0.0,     -- Phase offset in degrees of CLKFB (-360.000-360.000).
-   CLKIN1_PERIOD => 16.0,      -- Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
+   CLKIN1_PERIOD => 5.0,      -- Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
    -- CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for each CLKOUT (1-128)
-   CLKOUT1_DIVIDE => 8,
+   CLKOUT1_DIVIDE => 10,
    CLKOUT2_DIVIDE => 1,
    CLKOUT3_DIVIDE => 1,
    CLKOUT4_DIVIDE => 1,
@@ -490,7 +486,7 @@ port map (
    -- Clock Outputs: 1-bit (each) output: User configurable clock outputs
    CLKOUT0 => open,     -- 1-bit output: CLKOUT0
    CLKOUT0B => open,   -- 1-bit output: Inverted CLKOUT0
-   CLKOUT1 => sys_clk,     -- 1-bit output: CLKOUT1
+   CLKOUT1 => o_clk,     -- 1-bit output: CLKOUT1
    CLKOUT1B => open,   -- 1-bit output: Inverted CLKOUT1
    CLKOUT2 => open,     -- 1-bit output: CLKOUT2
    CLKOUT2B => open,   -- 1-bit output: Inverted CLKOUT2
@@ -505,7 +501,7 @@ port map (
    -- Status Ports: 1-bit (each) output: MMCM status ports
    LOCKED => LOCKED,       -- 1-bit output: LOCK
    -- Clock Inputs: 1-bit (each) input: Clock input
-   CLKIN1 => i_clk,       -- 1-bit input: Clock
+   CLKIN1 => sys_clk,       -- 1-bit input: Clock
    -- Control Ports: 1-bit (each) input: MMCM control ports
    PWRDWN => '0',       -- 1-bit input: Power-down
    RST => '0',             -- 1-bit input: Reset
@@ -525,7 +521,7 @@ port map (
       IBUF_LOW_PWR => TRUE, -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
       IOSTANDARD => "DEFAULT")
    port map (
-      O => clk_200M,  -- Buffer output
+      O => sys_clk,  -- Buffer output
       I => sys_clkp,  -- Diff_p buffer input (connect directly to top-level port)
       IB => sys_clkn -- Diff_n buffer input (connect directly to top-level port)
    );
