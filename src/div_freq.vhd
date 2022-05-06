@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noémie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
 
 --This file is part of the ATHENA X-IFU DRE RAS.
 
@@ -17,7 +17,7 @@
 --div_freq.vhd
 
 -- Company: IRAP
--- Engineer: Noémie Rolland
+-- Engineer: Noï¿½mie Rolland
 -- 
 -- Create Date: 04.03.2021 11:12:31
 -- Design Name: 
@@ -67,7 +67,7 @@ begin
         cmp <= (others => '0');
         o_clk_en_freq <= '0';
     elsif (rising_edge(i_clk)) then
-        if cmp = 100/unsigned(i_freq_row) - 1 then -- we divide the main clock frequence by the frequence we wan't
+        if cmp = unsigned(i_freq_row) then -- we divide the main clock frequence by the frequence we want
             cmp <= (others => '0');
             o_clk_en_freq <= '1';
         else

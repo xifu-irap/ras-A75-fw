@@ -441,12 +441,6 @@ end process reset_generator;
 
 s_rst <= rst_gen(rst_gen'left);
 
--- clk_gen : clock_gen Port map (
---     i_clk => clk_200M,
---     clk_62MHz => i_clk ,
---     o_rst => o_rst 
---     );
-
 MMCME2_BASE_inst : MMCME2_BASE
 generic map (
    BANDWIDTH => "OPTIMIZED",  -- Jitter programming (OPTIMIZED, HIGH, LOW)
