@@ -88,6 +88,9 @@ type t_Device_Ctrl_1
         Row10 : std_logic_vector(39 downto 0); 
         Row11 : std_logic_vector(39 downto 0);
         Row12 : std_logic_vector(39 downto 0);
+        Row13 : std_logic_vector(39 downto 0);
+        Row14 : std_logic_vector(39 downto 0);
+        synchro : std_logic_vector(39 downto 0);
      end record;
      
  type t_Version

@@ -153,7 +153,7 @@ architecture Behavioral of row_addressing is
     component div_freq is
         Port ( i_clk : in STD_LOGIC;
                i_rst_n : in STD_LOGIC;
-               i_freq_row : in STD_LOGIC_VECTOR;
+               i_line_period : in STD_LOGIC_VECTOR;
                o_clk_en_freq : out STD_LOGIC);
     end component;
     
@@ -304,7 +304,7 @@ signal num_row : integer;
 signal reception_param : std_logic_vector(95 downto 0);
 signal reception_mode : std_logic;
 signal reception_manual_row : std_logic_vector(39 downto 0);
-signal reception_cmd : t_Array13bits(12 downto 0);
+signal reception_cmd : t_Array13bits(15 downto 0);
 signal reception_DAC : std_logic_vector(64 downto 0);
 
 
@@ -334,6 +334,9 @@ signal sig_overlap9_int : std_logic;
 signal sig_overlap10_int : std_logic;
 signal sig_overlap11_int : std_logic;
 signal sig_overlap12_int : std_logic;
+signal sig_overlap13_int : std_logic;
+signal sig_overlap14_int : std_logic;
+signal sig_overlap15_int : std_logic;
 ---------------------------------------------------------
 
 --------------- HK signal -------------------------------
@@ -341,7 +344,7 @@ signal HK_value : std_logic_vector(31 downto 0);
 ---------------------------------------------------------
 
 --------------- Synchronisation signal ------------------
-signal sig_sync : std_logic_vector(12 downto 0);
+signal sig_sync : std_logic_vector(15 downto 0);
 ---------------------------------------------------------
 signal test : std_logic;
 
@@ -376,7 +379,7 @@ begin
 --=========================================================
 
 ------------- CHANGE ACCORDING TO THE VERSION ---------------
-Version.Firmware_id <= x"0130";
+Version.Firmware_id <= x"000A";
 -------------------------------------------------------------
 -------------------------------------------------------------
 Version.RAS_board_id <= x"0000"; -- TO BE CHANGED WHEN WE GET THE HARD HK
@@ -419,15 +422,15 @@ Cmd_row.Row9 <= reception_cmd(9);
 Cmd_row.Row10 <= reception_cmd(10);
 Cmd_row.Row11 <= reception_cmd(11);
 Cmd_row.Row12 <= reception_cmd(12);
+Cmd_row.Row13 <= reception_cmd(13);
+Cmd_row.Row14 <= reception_cmd(14);
+Cmd_row.synchro <= reception_cmd(15);
 
 Cmd_DAC.cluster <= reception_DAC(64 downto 33) ;
 Cmd_DAC.row <= reception_DAC(32 downto 1) ;
 Cmd_DAC.start <= reception_DAC(0) ;
 
 --===========================================================
-
-o_cluster_spare_1 <= '1' ;
-o_cluster_spare_2 <= '1' ;
 
 reset_generator: process(LOCKED, sys_clk)
 begin
@@ -672,28 +675,47 @@ begin
                 HK_value <= "000000000000000000000000" & Cmd_row.Row12(39 downto 32);
                 trigHK<= '1';
             elsif addr="0001111000" then
-                HK_value <= "0000000000000000000000000" & Cmd_param_3.Freq_row;
+                HK_value <= Cmd_row.Row13(31 downto 0);
+                trigHK<= '1';
+            elsif addr="0001111100" then
+                HK_value <= "000000000000000000000000" & Cmd_row.Row13(39 downto 32);
                 trigHK<= '1';
             elsif addr="0010000000" then
-                HK_value <= "0000000000000000000000000000000" & Cmd_param_3.mode;
+                HK_value <= Cmd_row.Row14(31 downto 0);
                 trigHK<= '1';
             elsif addr="0010000100" then
-                HK_value <= Version.RAS_board_id & Version.Firmware_id;
+                HK_value <= "000000000000000000000000" & Cmd_row.Row14(39 downto 32);
                 trigHK<= '1';
             elsif addr="0010001000" then
-                HK_value <= x"0000" & Cmd_DAC.row(15 downto 0);
+                HK_value <= Cmd_row.synchro(31 downto 0);
                 trigHK<= '1';
             elsif addr="0010001100" then
-                HK_value <= x"0000" & Cmd_DAC.row(31 downto 16);
-                trigHK<= '1';
+                HK_value <= "000000000000000000000000" & Cmd_row.synchro(39 downto 32);
+                trigHK<= '1';                
+
             elsif addr="0010010000" then
-                HK_value <= x"0000" & Cmd_DAC.cluster(15 downto 0);
+                HK_value <= "0000000000000000000000000" & Cmd_param_3.Freq_row;
                 trigHK<= '1';
             elsif addr="0010010100" then
-                HK_value <= x"0000" & Cmd_DAC.cluster(31 downto 16);
+                HK_value <= "0000000000000000000000000000000" & Cmd_param_3.mode;
                 trigHK<= '1';
             elsif addr="0010011000" then
+                HK_value <= x"0000" & Cmd_DAC.row(15 downto 0);
+                trigHK<= '1';
+            elsif addr="0010011100" then
+                HK_value <= x"0000" & Cmd_DAC.row(31 downto 16);
+                trigHK<= '1';
+            elsif addr="0010100000" then
+                HK_value <= x"0000" & Cmd_DAC.cluster(15 downto 0);
+                trigHK<= '1';
+            elsif addr="0010100100" then
+                HK_value <= x"0000" & Cmd_DAC.cluster(31 downto 16);
+                trigHK<= '1';
+            elsif addr="0010101000" then
                 HK_value <= (0 => Cmd_DAC.start, others => '0');
+                trigHK<= '1';
+            elsif addr="0010101100" then
+                HK_value <= Version.RAS_board_id & Version.Firmware_id;
                 trigHK<= '1';
             else
                 HK_value <= (others => '0');
@@ -733,7 +755,7 @@ begin
                         reception_manual_row(39 downto 32) <= fifoIn_dout_128b(103 downto 96);
                         state <= idle;
                         
-                    elsif (addr >= "0000010000" and addr < "0001111000") then --address of the ROW
+                    elsif (addr >= "0000010000" and addr < "0010010000") then --address of the ROW
                         if (addr(2)='0') then --address of the row LSB
                             reception_cmd(num_row)(31 downto 0) <= fifoIn_dout_128b(87 downto 80) & fifoIn_dout_128b(71 downto 64) & fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                             state <= idle;
@@ -742,46 +764,44 @@ begin
                             state <= idle;
                         end if;
                     
-                    elsif (addr >= "0001111000" and addr < "0001111100") then --address of Device Ctrl 3
+                    elsif (addr >= "0010010000" and addr < "0010010100") then --address of Device Ctrl 3
                     
                         reception_param(95 downto 64) <= fifoIn_dout_128b(87 downto 80) & fifoIn_dout_128b(71 downto 64) & fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                         state <= idle;
-
-                    elsif (addr >= "0010001000" and addr < "0010001100") then -- dac_row_low
+                    elsif (addr >= "0010011000" and addr < "0010011100") then -- dac_row_low
                     
                         reception_DAC(16 downto 1) <=  fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                         state <= idle;
 
-                    elsif (addr >= "0010001100" and addr < "0010010000") then -- dac_row_high
+                    elsif (addr >= "0010011100" and addr < "0010100000") then -- dac_row_high
                     
                         reception_DAC(32 downto 17) <=  fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                         state <= idle;
 
-                    elsif (addr >= "0010010000" and addr < "0010010100") then -- dac_cluster_low
+                    elsif (addr >= "0010100000" and addr < "0010100100") then -- dac_cluster_low
                     
                         reception_DAC(48 downto 33) <= fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                         state <= idle;
 
-                    elsif (addr >= "0010010100" and addr < "0010011000") then --  dac_cluster_high
+                    elsif (addr >= "0010100100" and addr < "0010101000") then --  dac_cluster_high
                     
                         reception_DAC(64 downto 49) <= fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                         state <= idle;
 
-                    elsif (addr >= "0010011000" and addr < "0010100000" ) then --  dac_start
+                    elsif (addr >= "0010101000" and addr < "0010101100" ) then --  dac_start
                         reception_DAC(0) <= fifoIn_dout_128b(96);
                         state <= idle;
-                       
-                    elsif (addr >= "0010000000"  and addr < "0010000100") then -- address of mode
+                    elsif (addr >= "0010010100"  and addr < "0010011000") then -- address of mode
                         reception_mode <= fifoIn_dout_128b(96);
                         state <= idle;
-                    end if;
+                    end if;  
                 else
                     state <= data_reception;
                 end if;  
                   
             elsif (Cmd_param_3.mode = '1') then -- if mode='1' only the value of mode can be changed
                     
-                if (addr >= "0010000000" and addr < "0010000100") then -- address of mode
+                if (addr >= "0010010100" and addr < "0010011000") then -- address of mode
                     if (fifoIn_valid = '1') then -- if the data is valid
                         test <= '1';
                         reception_mode <= fifoIn_dout_128b(96); --reception of mode
@@ -845,7 +865,7 @@ rst_n <= not(s_rst) and Cmd_param_3.mode;
    uclk_en : div_freq PORT MAP (
         i_clk => sys_clk,
         i_rst_n => rst_n,
-        i_freq_row => Cmd_param_3.Freq_row,
+        i_line_period => Cmd_param_2.LPR,
         o_clk_en_freq => clk_en_freq
         );
 
@@ -1017,10 +1037,49 @@ o_sig_overlap11 <= sig_overlap11_int;
           o_sig_sync => sig_sync(12)
         );
 o_sig_overlap12 <= sig_overlap12_int;
-        
+
+----       
+    uu13: sequence_treatment PORT MAP (
+        i_clk => sys_clk,
+        i_clk_en_5M => clk_en_freq,
+        i_rst_n => rst_n,
+        i_cmd => Cmd_row.Row13,
+        i_REV => Cmd_param_1.REV,
+        i_first_row => Cmd_row.Row13(0),
+        i_NRO => Cmd_param_2.NRO,
+        o_sig_overlap => sig_overlap13_int,
+        o_sig_sync => sig_sync(13)
+    );
+o_cluster_spare_1 <= sig_overlap13_int;
+
+    uu14: sequence_treatment PORT MAP (
+        i_clk => sys_clk,
+        i_clk_en_5M => clk_en_freq,
+        i_rst_n => rst_n,
+        i_cmd => Cmd_row.Row14,
+        i_REV => Cmd_param_1.REV,
+        i_first_row => Cmd_row.Row14(0),
+        i_NRO => Cmd_param_2.NRO,
+        o_sig_overlap => sig_overlap14_int,
+        o_sig_sync => sig_sync(14)
+    );
+    o_cluster_spare_2 <= sig_overlap14_int;
+
+    uu15: entity work.sequence_treatment_synchro PORT MAP (
+        i_clk => sys_clk,
+        i_clk_en_5M => clk_en_freq,
+        i_rst_n => rst_n,
+        i_cmd => Cmd_row.synchro,
+        i_NRO => Cmd_param_2.NRO,
+        i_DEL => Cmd_param_2.DEL,
+        o_sig_late => sig_overlap15_int
+    );
+    o_synchro <= sig_overlap15_int;
+
+----
 fifoOut_din <= sig_overlap12_int & sig_overlap11_int & sig_overlap10_int & sig_overlap9_int & sig_overlap8_int & sig_overlap7_int & sig_overlap6_int & sig_overlap5_int & sig_overlap4_int & sig_overlap3_int & sig_overlap2_int & sig_overlap1_int & sig_overlap0_int;         
 
-o_synchro <= sig_sync(12) and sig_sync(11) and sig_sync(10) and sig_sync(9) and sig_sync(8) and sig_sync(7) and sig_sync(6) and sig_sync(5) and sig_sync(4) and sig_sync(3) and sig_sync(2) and sig_sync(1) and sig_sync(0); -- AND between each sig sync of each row (when the row isn't activated at the first time thsi signal is always '1')
+--o_synchro <= sig_sync(12) and sig_sync(11) and sig_sync(10) and sig_sync(9) and sig_sync(8) and sig_sync(7) and sig_sync(6) and sig_sync(5) and sig_sync(4) and sig_sync(3) and sig_sync(2) and sig_sync(1) and sig_sync(0); -- AND between each sig sync of each row (when the row isn't activated at the first time thsi signal is always '1')
 
 -----------------------------------------------------  
 -------------- FIFO PipeIn --------------------------

@@ -51,13 +51,13 @@ use IEEE.NUMERIC_STD.ALL;
 entity div_freq is
     Port ( i_clk : in STD_LOGIC;
            i_rst_n : in STD_LOGIC;
-           i_freq_row : in STD_LOGIC_VECTOR;
+           i_line_period : in STD_LOGIC_VECTOR;
            o_clk_en_freq : out STD_LOGIC);
 end div_freq;
 
 architecture Behavioral of div_freq is
 
-signal cmp : unsigned (6 downto 0);
+signal cmp : unsigned (7 downto 0);
 
 begin
 
@@ -67,7 +67,7 @@ begin
         cmp <= (others => '0');
         o_clk_en_freq <= '0';
     elsif (rising_edge(i_clk)) then
-        if cmp = unsigned(i_freq_row) then -- we divide the main clock frequence by the frequence we want
+        if cmp = unsigned(i_line_period) then -- we divide the main clock frequence by the frequence we want
             cmp <= (others => '0');
             o_clk_en_freq <= '1';
         else

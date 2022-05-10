@@ -62,7 +62,7 @@ architecture simulate of row_addressing_tb is
     
           sys_clkp : in std_logic;
           sys_clkn : in std_logic;
-          -- sys_clk : in std_logic;
+          o_clk    : out std_logic;
     ---------------------- RST -------------------------
          -- i_rst : in std_logic;
           
@@ -84,7 +84,7 @@ architecture simulate of row_addressing_tb is
            o_sig_overlap11 : out STD_LOGIC;
            o_sig_overlap12 : out STD_LOGIC;
            o_synchro : out STD_LOGIC;
-           o_sig_state : out STD_LOGIC_VECTOR(3 downto 0);
+           --o_sig_state : out STD_LOGIC_VECTOR(3 downto 0);
 		----------------------- DAC ------------------------     
 		o_dac_data                 : out STD_LOGIC;
 		o_dac_sclk                 : out STD_LOGIC;
@@ -120,8 +120,9 @@ signal o_sig_overlap9 : STD_LOGIC;
 signal o_sig_overlap10 : STD_LOGIC;
 signal o_sig_overlap11 : STD_LOGIC;
 signal o_sig_overlap12 : STD_LOGIC;
-signal o_synchro : STD_LOGIC;
-signal o_sig_state : STD_LOGIC_VECTOR(3 downto 0); 
+signal o_synchro       : STD_LOGIC;
+signal o_clk           : std_logic;
+signal o_sig_state     : STD_LOGIC_VECTOR(3 downto 0); 
 signal o_dac_data                 : STD_LOGIC;
 signal o_dac_sclk                 : STD_LOGIC;
 signal o_dac_sync_row_low_n       : STD_LOGIC;
@@ -144,7 +145,7 @@ signal o_dac_sync_cluster_high_n  : STD_LOGIC;
 
 	signal sys_clkp   : std_logic;
 	signal sys_clkn   : std_logic;
-	signal sys_clk : STD_LOGIC ;
+
 
 
 
@@ -159,14 +160,13 @@ begin
 		  
 		  sys_clkp => sys_clkp,
 		  sys_clkn => sys_clkn,
-		  --sys_clk => sys_clk,
     
     ---------------------- RST -------------------------
          -- i_rst => i_rst,
     ----------------------- LED ------------------------
           led => led,     
     ----------------------- FAS ------------------------
-           --i_clk => i_clk,
+           o_clk => o_clk,
            o_sig_overlap0 => o_sig_overlap0,
            o_sig_overlap1 => o_sig_overlap1,
            o_sig_overlap2 => o_sig_overlap2,
@@ -181,7 +181,7 @@ begin
            o_sig_overlap11 => o_sig_overlap11,
            o_sig_overlap12 => o_sig_overlap12,
            o_synchro => o_synchro,
-	       o_sig_state => o_sig_state,
+	       --o_sig_state => o_sig_state,
 
     ----------------------- DAC ------------------------ 
 	   o_dac_data                =>  o_dac_data                ,
@@ -205,11 +205,9 @@ begin
    -- Clock process definitions
 	sys_clk_gen : process is
 	begin
-		--sys_clk <= '0';
 		sys_clkp <= '0';
 		sys_clkn <= '1';
 		wait for Tsys_clk;
-		--sys_clk <= '1';
 		sys_clkp <= '1';
 		sys_clkn <= '0'; 
 		wait for Tsys_clk; 
@@ -865,14 +863,14 @@ wait for 10 ns;
 ---------------------------------
 
 -- W : Register cmd : 4
-pipeIn(0):= "11111111" ;
+pipeIn(0):= "11000010" ;
 pipeIn(1):= "00000000";
-pipeIn(2):= "11111111" ;
+pipeIn(2):= "00000000" ;
 pipeIn(3):= "00000000";
 WriteToPipeIn(x"80",pipeInSize);
 wait for 10 ns;
 
-pipeIn(0):= "11111111" ;
+pipeIn(0):= "11000010" ;
 pipeIn(1):= "00000000";
 pipeIn(2):= "11100100" ;
 pipeIn(3):= "00000000";
@@ -3262,7 +3260,7 @@ wait for 10 us;
 end process;
 
 process 
-    file file_results : text open write_mode is "C:\Users\paulm\Onedrive\Bureau\ras-a75-fw-1.3.0\ras-a75-fw-1.3.0\script\simu\sim_results.txt";
+    --file file_results : text open write_mode is "C:\Users\paulm\Onedrive\Bureau\ras-a75-fw-1.3.0\ras-a75-fw-1.3.0\script\simu\sim_results.txt";
     variable v_line : line;    
     begin
         wait for 10 ns;
@@ -3281,7 +3279,7 @@ process
         write(v_line, o_sig_overlap2);
         write(v_line, o_sig_overlap1);
         write(v_line, o_sig_overlap0);
-        writeline(file_results,v_line);
+        --writeline(file_results,v_line);
     
 end process;
 
