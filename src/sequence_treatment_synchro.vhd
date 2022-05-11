@@ -38,10 +38,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -54,7 +51,7 @@ entity sequence_treatment_synchro is
            i_rst_n : in STD_LOGIC;
            i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
            i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-           i_DEL : in std_logic_vector(13 downto 0);
+           i_DEL : in std_logic_vector(7 downto 0);
            o_sig_late : out STD_LOGIC);
 end sequence_treatment_synchro;
 
@@ -71,20 +68,12 @@ COMPONENT read_5MHz
         );
     END COMPONENT;
 
-COMPONENT shift_register_15b
-    PORT(
-         i_clk : IN  std_logic;
-         i_rst_n : IN  std_logic;
-         i_seq_5MHz : IN  std_logic;
-         o_sig_late : OUT  std_logic_vector(14 downto 0)
-        );
-    END COMPONENT;
-
 ----------- Intern signals -----------------
-signal seq_5MHz : std_logic;
-signal sig_late : std_logic_vector(14 downto 0);
-
-
+signal seq_5MHz   : std_logic;
+signal sig_late   : std_logic_vector(0 downto 0);
+signal rst        : std_logic;
+signal seq_early  : std_logic_vector(0 downto 0);
+signal data_valid : std_logic;
    
 begin
 
@@ -99,8 +88,24 @@ uu0: read_5MHz PORT MAP (  -- Read of each bit of the sequence at 5 MHz
           o_seq_5MHz => seq_5MHz
         );
 
+delay_mgt : entity work.delay_mgt
+    generic map (
+        data_size   => 1,                  -- Width of the data to store
+        dpram_depth => 256                 -- Depth of the DPRAM ! Must be > or = 64 !
+        )
+    port map (	
+        data_a  	=> seq_early,
+        data_b	    => seq_early,
+        clk  		=> i_clk,                           -- Clock for both ports 
+        rst         => rst,                             -- Reset to get the valid data
+        delay_value => i_DEL,                           -- Delay value
+        q_a	        => open,                            -- Data output for port A
+        q_b		    => sig_late,                        -- Data output for port B
+        data_valid  => data_valid
+    );
 
-		        
-o_sig_late <= sig_late;
+seq_early(0) <= seq_5MHz; 	        
+o_sig_late <= sig_late(0) and data_valid;
+rst <= not(i_rst_n);
 
 end Behavioral;

@@ -1071,7 +1071,7 @@ o_cluster_spare_1 <= sig_overlap13_int;
         i_rst_n => rst_n,
         i_cmd => Cmd_row.synchro,
         i_NRO => Cmd_param_2.NRO,
-        i_DEL => Cmd_param_2.DEL,
+        i_DEL => Cmd_param_2.DEL(7 downto 0),
         o_sig_late => sig_overlap15_int
     );
     o_synchro <= sig_overlap15_int;
