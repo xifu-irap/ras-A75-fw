@@ -49,8 +49,8 @@ entity row_addressing is
 		okUHU     : inout std_logic_vector(31 downto 0);
 		okAA      : inout std_logic;
     
-        sys_clkp : in std_logic;  -- OK clock at 200 MHz
-		sys_clkn : in std_logic;
+        ok_clk_200p : in std_logic;  -- OK clock at 200 MHz
+		ok_clk_200n : in std_logic;
 
         o_clk    : out std_logic; -- Clock to the DEMUX at 100 MHz
 
@@ -96,14 +96,14 @@ architecture Behavioral of row_addressing is
         i_clk : in STD_LOGIC;
         i_rst_n : in STD_LOGIC;
         i_line_period : in STD_LOGIC_VECTOR;
-        o_clk_en_freq : out STD_LOGIC
+        clk_5_enable : out STD_LOGIC
         );
     end component;
     
     component sequence_treatment
     Port ( 
         i_clk : in STD_LOGIC;
-        i_clk_en_5M : in STD_LOGIC;
+        i_clk_row_enable : in STD_LOGIC;
         i_rst_n : in STD_LOGIC;
         i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
         i_REV : in STD_LOGIC_VECTOR (3 downto 0);
@@ -188,7 +188,7 @@ architecture Behavioral of row_addressing is
     END COMPONENT;
 
 ----------- Clk signal -------------------------------
-signal clk_en_freq : std_logic;
+signal clk_row_enable : std_logic;
 -------------------------------------------------------
 
 ----------- OK signals ---------------------------------
@@ -323,7 +323,7 @@ begin
 --=========================================================
 
 ------- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
-Version.Firmware_id <= x"0013";
+Version.Firmware_id <= x"0014";
 ------- TO BE CHANGED ACCORDING TO THE HARDWARE VERSION -----
 Version.RAS_board_id <= x"0000";
 -------------------------------------------------------------
@@ -462,8 +462,8 @@ port map (
       IOSTANDARD => "DEFAULT")
    port map (
       O => clk_200M,  -- Buffer output
-      I => sys_clkp,  -- Diff_p buffer input (connect directly to top-level port)
-      IB => sys_clkn -- Diff_n buffer input (connect directly to top-level port)
+      I => ok_clk_200p,  -- Diff_p buffer input (connect directly to top-level port)
+      IB => ok_clk_200n -- Diff_n buffer input (connect directly to top-level port)
    );
 
    -- End of IBUFDS_inst instantiation
@@ -818,12 +818,12 @@ rst_n <= not(s_rst) and Cmd_param_3.mode;
         i_clk => sys_clk,
         i_rst_n => rst_n,
         i_line_period => Cmd_param_2.LPR,
-        o_clk_en_freq => clk_en_freq
+        clk_5_enable => clk_row_enable
         );
 
    uu0: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row0,
           i_REV => Cmd_param_1.REV,
@@ -836,7 +836,7 @@ o_sig_overlap0 <= sig_overlap0_int;
       
    uu1: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row1,
           i_REV => Cmd_param_1.REV,
@@ -849,7 +849,7 @@ o_sig_overlap1 <= sig_overlap1_int;
         
    uu2: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row2,
           i_REV => Cmd_param_1.REV,
@@ -862,7 +862,7 @@ o_sig_overlap2 <= sig_overlap2_int;
        
    uu3: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row3,
           i_REV => Cmd_param_1.REV,
@@ -875,7 +875,7 @@ o_sig_overlap3 <= sig_overlap3_int;
         
    uu4: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row4,
           i_REV => Cmd_param_1.REV,
@@ -888,7 +888,7 @@ o_sig_overlap4 <= sig_overlap4_int;
         
    uu5: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row5,
           i_REV => Cmd_param_1.REV,
@@ -901,7 +901,7 @@ o_sig_overlap5 <= sig_overlap5_int;
        
    uu6: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row6,
           i_REV => Cmd_param_1.REV,
@@ -914,7 +914,7 @@ o_sig_overlap6 <= sig_overlap6_int;
         
    uu7: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row7,
           i_REV => Cmd_param_1.REV,
@@ -927,7 +927,7 @@ o_sig_overlap7 <= sig_overlap7_int;
         
    uu8: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row8,
           i_REV => Cmd_param_1.REV,
@@ -940,7 +940,7 @@ o_sig_overlap8 <= sig_overlap8_int;
         
    uu9: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row9,
           i_REV => Cmd_param_1.REV,
@@ -953,7 +953,7 @@ o_sig_overlap9 <= sig_overlap9_int;
         
    uu10: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row10,
           i_REV => Cmd_param_1.REV,
@@ -966,7 +966,7 @@ o_sig_overlap10 <= sig_overlap10_int;
         
    uu11: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row11,
           i_REV => Cmd_param_1.REV,
@@ -979,7 +979,7 @@ o_sig_overlap11 <= sig_overlap11_int;
         
    uu12: sequence_treatment PORT MAP (
           i_clk => sys_clk,
-          i_clk_en_5M => clk_en_freq,
+          i_clk_row_enable => clk_row_enable,
           i_rst_n => rst_n,
           i_cmd => Cmd_row.Row12,
           i_REV => Cmd_param_1.REV,
@@ -993,7 +993,7 @@ o_sig_overlap12 <= sig_overlap12_int;
 ----       
     uu13: sequence_treatment PORT MAP (
         i_clk => sys_clk,
-        i_clk_en_5M => clk_en_freq,
+        i_clk_row_enable => clk_row_enable,
         i_rst_n => rst_n,
         i_cmd => Cmd_row.Row13,
         i_REV => Cmd_param_1.REV,
@@ -1006,7 +1006,7 @@ o_cluster_spare_1 <= sig_overlap13_int;
 
     uu14: sequence_treatment PORT MAP (
         i_clk => sys_clk,
-        i_clk_en_5M => clk_en_freq,
+        i_clk_row_enable => clk_row_enable,
         i_rst_n => rst_n,
         i_cmd => Cmd_row.Row14,
         i_REV => Cmd_param_1.REV,
@@ -1019,7 +1019,7 @@ o_cluster_spare_1 <= sig_overlap13_int;
 
     uu15: entity work.sequence_treatment_synchro PORT MAP (
         i_clk => sys_clk,
-        i_clk_en_5M => clk_en_freq,
+        i_clk_row_enable => clk_row_enable,
         i_rst_n => rst_n,
         i_cmd => Cmd_row.synchro,
         i_NRO => Cmd_param_2.NRO,
@@ -1027,9 +1027,7 @@ o_cluster_spare_1 <= sig_overlap13_int;
         o_sig_late => sig_overlap15_int
     );
 
-    ---- JUST FOR TEST
-    --o_synchro <= sig_overlap15_int;
-    o_synchro <= sys_clk;
+    o_synchro <= sig_overlap15_int;
 
 ----
 fifoOut_din <= sig_overlap12_int & sig_overlap11_int & sig_overlap10_int & sig_overlap9_int & sig_overlap8_int & sig_overlap7_int & sig_overlap6_int & sig_overlap5_int & sig_overlap4_int & sig_overlap3_int & sig_overlap2_int & sig_overlap1_int & sig_overlap0_int;         

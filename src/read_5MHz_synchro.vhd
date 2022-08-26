@@ -48,7 +48,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity read_5MHz is
+entity read_5MHz_synchro is
     Port 
         ( 
         i_clk : in STD_LOGIC;                       -- system clock
@@ -58,19 +58,35 @@ entity read_5MHz is
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
         o_seq_5MHz : out STD_LOGIC
         );
-end read_5MHz;
+end read_5MHz_synchro;
 
-architecture Behavioral of read_5MHz is
+architecture Behavioral of read_5MHz_synchro is
 
 signal cmd_int : std_logic_vector(39 downto 0);
 signal counter : unsigned(5 downto 0);
+signal clk_row_enable2 : STD_LOGIC;
+signal clk_row_enable3 : STD_LOGIC;
+signal clk_row_enable4 : STD_LOGIC;
 
 begin
+
+-- This delayed ghate is used to raz the synchronisation signal after few system clock periods
+P_delay_row_gate : process(i_clk, i_rst_n)
+begin
+    if (i_rst_n = '0') then
+        clk_row_enable2 <= '0';
+        clk_row_enable3 <= '0';
+        clk_row_enable4 <= '0';
+    elsif (rising_edge(i_clk)) then 
+        clk_row_enable4 <= clk_row_enable3;
+        clk_row_enable3 <= clk_row_enable2;
+        clk_row_enable2 <= i_clk_row_enable;
+    end if;
+end process;
 
 P_read_process : process(i_clk, i_rst_n)
 begin
     if (i_rst_n = '0') then
-    -- intitialisation of the signals during the reset
         o_seq_5MHz <= '0';
         cmd_int <= i_cmd; --the command sequence is stored in an intern signal
         counter <= "000000";
@@ -93,6 +109,12 @@ begin
             end if;  
         
         end if;
+ 
+        -- We want to raz the synchronization signal after few system clock periods       
+        if (clk_row_enable4 = '1') then
+            o_seq_5MHz <= '0';
+        end if;
+
    end if;
 end process;
 

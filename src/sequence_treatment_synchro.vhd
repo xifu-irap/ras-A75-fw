@@ -46,27 +46,32 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity sequence_treatment_synchro is
-    Port ( i_clk : in STD_LOGIC;
-           i_clk_en_5M : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
-           i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-           i_DEL : in std_logic_vector(7 downto 0);
-           o_sig_late : out STD_LOGIC);
+    Port
+        (
+        i_clk : in STD_LOGIC;
+        i_clk_row_enable : in STD_LOGIC;
+        i_rst_n : in STD_LOGIC;
+        i_cmd : in STD_LOGIC_VECTOR(39 downto 0);
+        i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
+        i_DEL : in std_logic_vector(7 downto 0);
+        o_sig_late : out STD_LOGIC
+        );
 end sequence_treatment_synchro;
+
 
 architecture Behavioral of sequence_treatment_synchro is
 
-COMPONENT read_5MHz
-    PORT(
-         i_clk : IN  std_logic;
-         i_clk_en_5M : in STD_LOGIC;
-         i_rst_n : IN  std_logic;
-         i_cmd : IN  std_logic_vector(39 downto 0);
-         i_NRO : IN std_logic_vector(5 downto 0);
-         o_seq_5MHz : OUT  std_logic
+COMPONENT read_5MHz_synchro
+    PORT
+        (
+        i_clk : IN  std_logic;
+        i_clk_row_enable : in STD_LOGIC;
+        i_rst_n : IN  std_logic;
+        i_cmd : IN  std_logic_vector(39 downto 0);
+        i_NRO : IN std_logic_vector(5 downto 0);
+        o_seq_5MHz : OUT  std_logic
         );
-    END COMPONENT;
+END COMPONENT;
 
 ----------- Intern signals -----------------
 signal seq_5MHz   : std_logic;
@@ -79,21 +84,25 @@ begin
 
 -- instantiation of the modules
 
-uu0: read_5MHz PORT MAP (  -- Read of each bit of the sequence at 5 MHz
+uu0: read_5MHz_synchro PORT MAP
+    (  -- Read of each bit of the sequence at 5 MHz
           i_clk => i_clk,
-          i_clk_en_5M => i_clk_en_5M,
+          i_clk_row_enable => i_clk_row_enable,
           i_rst_n => i_rst_n,
           i_cmd => i_cmd,
           i_NRO => i_NRO,
           o_seq_5MHz => seq_5MHz
-        );
+    );
+
 
 delay_mgt : entity work.delay_mgt
-    generic map (
+    generic map 
+        (
         data_size   => 1,                  -- Width of the data to store
         dpram_depth => 256                 -- Depth of the DPRAM ! Must be > or = 64 !
         )
-    port map (	
+    port map 
+        (	
         data_a  	=> seq_early,
         data_b	    => seq_early,
         clk  		=> i_clk,                           -- Clock for both ports 
@@ -102,7 +111,7 @@ delay_mgt : entity work.delay_mgt
         q_a	        => open,                            -- Data output for port A
         q_b		    => sig_late,                        -- Data output for port B
         data_valid  => data_valid
-    );
+        );
 
 seq_early(0) <= seq_5MHz; 	        
 o_sig_late <= sig_late(0) and data_valid;
