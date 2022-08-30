@@ -305,7 +305,6 @@ signal cmp : unsigned(25 downto 0);
 --signal i_clk : std_logic ;
 signal clk_200M : std_logic ; 
 signal sys_clk : std_logic ; -- 245.76 MHz
-signal sys_clkb : std_logic ; -- 245.76 MHz
 signal oo_clk : std_logic ; -- output clock at 100 MHz
 signal CLKFBOUT : std_logic ; 
 signal LOCKED : std_logic;
@@ -324,7 +323,7 @@ begin
 --=========================================================
 
 ------- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
-Version.Firmware_id <= x"0015";
+Version.Firmware_id <= x"0016";
 ------- TO BE CHANGED ACCORDING TO THE HARDWARE VERSION -----
 Version.RAS_board_id <= x"0000";
 -------------------------------------------------------------
@@ -426,7 +425,7 @@ generic map (
 port map (
    -- Clock Outputs: 1-bit (each) output: User configurable clock outputs
    CLKOUT0 => sys_clk,     -- 1-bit output: CLKOUT0
-   CLKOUT0B => sys_clkb,   -- 1-bit output: Inverted CLKOUT0
+   CLKOUT0B => open,   -- 1-bit output: Inverted CLKOUT0
    CLKOUT1 => open,     -- 1-bit output: CLKOUT1
    CLKOUT1B => open,   -- 1-bit output: Inverted CLKOUT1
    CLKOUT2 => open,     -- 1-bit output: CLKOUT2
@@ -1028,11 +1027,8 @@ o_cluster_spare_1 <= sig_overlap13_int;
         o_sig_late => sig_overlap15_int
     );
 
---- Just for testing
-  --  o_synchro <= sig_overlap15_int;
-    o_synchro <= sys_clkb;
+    o_synchro <= sig_overlap15_int;
 
-----
 fifoOut_din <= sig_overlap12_int & sig_overlap11_int & sig_overlap10_int & sig_overlap9_int & sig_overlap8_int & sig_overlap7_int & sig_overlap6_int & sig_overlap5_int & sig_overlap4_int & sig_overlap3_int & sig_overlap2_int & sig_overlap1_int & sig_overlap0_int;         
 
 -----------------------------------------------------  
