@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noémie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
 
 --This file is part of the ATHENA X-IFU DRE RAS.
 
@@ -17,7 +17,7 @@
 --sequence_treatment.vhd
 
 -- Company: IRAP
--- Engineer: Noémie Rolland
+-- Engineer: Noï¿½mie Rolland
 -- 
 -- Create Date: 23.02.2021 12:00:40
 -- Design Name: 
@@ -50,7 +50,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity sequence_treatment is
     Port ( i_clk : in STD_LOGIC;
-           i_clk_en_5M : in STD_LOGIC;
+           i_clk_row_enable : in STD_LOGIC;
            i_rst_n : in STD_LOGIC;
            i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
            i_REV : in STD_LOGIC_VECTOR(3 downto 0);
@@ -65,7 +65,7 @@ architecture Behavioral of sequence_treatment is
 COMPONENT read_5MHz
     PORT(
          i_clk : IN  std_logic;
-         i_clk_en_5M : in STD_LOGIC;
+         i_clk_row_enable : in STD_LOGIC;
          i_rst_n : IN  std_logic;
          i_cmd : IN  std_logic_vector(39 downto 0);
          i_NRO : IN std_logic_vector(5 downto 0);
@@ -126,7 +126,7 @@ begin
 
 uu0: read_5MHz PORT MAP (  -- Read of each bit of the sequence at 5 MHz
           i_clk => i_clk,
-          i_clk_en_5M => i_clk_en_5M,
+          i_clk_row_enable => i_clk_row_enable,
           i_rst_n => i_rst_n,
           i_cmd => i_cmd,
           i_NRO => i_NRO,

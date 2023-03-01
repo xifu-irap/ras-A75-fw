@@ -4,3 +4,4 @@ ip/**/*.xdc
 ip/**/*.dcp
 ip/**/*.xml
 ip/**/*.vhd
+.DS_Store

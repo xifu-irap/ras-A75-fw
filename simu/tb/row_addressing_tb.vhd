@@ -60,8 +60,8 @@ architecture simulate of row_addressing_tb is
 		  okUHU     : inout std_logic_vector(31 downto 0);
 		  okAA      : inout std_logic;
     
-          sys_clkp : in std_logic;
-          sys_clkn : in std_logic;
+          ok_clk_200p : in std_logic;
+          ok_clk_200n : in std_logic;
           -- sys_clk : in std_logic;
     ---------------------- RST -------------------------
          -- i_rst : in std_logic;
@@ -142,8 +142,8 @@ signal o_dac_sync_cluster_high_n  : STD_LOGIC;
 	signal   hi_datain  : std_logic_vector(31 downto 0) := x"00000000";
 	signal   hi_dataout : std_logic_vector(31 downto 0) := x"00000000";
 
-	signal sys_clkp   : std_logic;
-	signal sys_clkn   : std_logic;
+	signal ok_clk_200p   : std_logic;
+	signal ok_clk_200n   : std_logic;
 	signal sys_clk : STD_LOGIC ;
 
 
@@ -157,8 +157,8 @@ begin
 		  okUHU     => okUHU,
 		  okAA      => okAA,
 		  
-		  sys_clkp => sys_clkp,
-		  sys_clkn => sys_clkn,
+		  ok_clk_200p => ok_clk_200p,
+		  ok_clk_200n => ok_clk_200n,
 		  --sys_clk => sys_clk,
     
     ---------------------- RST -------------------------
@@ -206,12 +206,12 @@ begin
 	sys_clk_gen : process is
 	begin
 		--sys_clk <= '0';
-		sys_clkp <= '0';
-		sys_clkn <= '1';
+		ok_clk_200p <= '0';
+		ok_clk_200n <= '1';
 		wait for Tsys_clk;
 		--sys_clk <= '1';
-		sys_clkp <= '1';
-		sys_clkn <= '0'; 
+		ok_clk_200p <= '1';
+		ok_clk_200n <= '0'; 
 		wait for Tsys_clk; 
 	end process sys_clk_gen;
 
