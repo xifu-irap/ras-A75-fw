@@ -302,10 +302,8 @@ signal led_int : std_logic_vector(7 downto 0);
 signal cmp : unsigned(25 downto 0);
 
 ---------------- PLL + Temporary clocks ---------------
---signal i_clk : std_logic ;
 signal clk_200M : std_logic ; 
-signal sys_clk : std_logic ; -- 245.76 MHz
-signal oo_clk : std_logic ; -- output clock at 100 MHz
+signal sys_clk : std_logic ; -- 125 MHz
 signal CLKFBOUT : std_logic ; 
 signal LOCKED : std_logic;
 signal o_rst : std_logic ;
@@ -469,16 +467,6 @@ port map (
    -- End of IBUFDS_inst instantiation
 --===========================================================   
 
--------- Generation de l'horloge de sortie à 100MHz --------
-P_Clk_out : process (clk_200M, s_rst)
-begin
-    if (s_rst = '1') then --intitialisation of the different signal
-        oo_clk <= '0';
-            elsif (rising_edge(clk_200M)) then
-		oo_clk <= not oo_clk;
-	end if;
-end process;
-o_clk <= oo_clk;
 
 -------- Reception and storage of the sequences --------
 P_Cmd_reception : process (sys_clk, s_rst)
