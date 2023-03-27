@@ -1,19 +1,4 @@
-set_property PACKAGE_PIN P15 [get_ports {okUHU[28]}]
-set_property PACKAGE_PIN U20 [get_ports {okUHU[20]}]
-set_property PACKAGE_PIN N17 [get_ports {okUHU[21]}]
-set_property PACKAGE_PIN N14 [get_ports {okUHU[22]}]
-set_property PACKAGE_PIN V20 [get_ports {okUHU[23]}]
-set_property PACKAGE_PIN P16 [get_ports {okUHU[24]}]
-set_property PACKAGE_PIN T18 [get_ports {okUHU[25]}]
-set_property PACKAGE_PIN V19 [get_ports {okUHU[26]}]
-set_property PACKAGE_PIN AB20 [get_ports {okUHU[27]}]
-set_property PACKAGE_PIN P17 [get_ports {okUHU[19]}]
-set_property PACKAGE_PIN V22 [get_ports {okUHU[29]}]
-set_property PACKAGE_PIN AB18 [get_ports {okUHU[31]}]
-set_property PACKAGE_PIN R14 [get_ports {okUHU[16]}]
-set_property PACKAGE_PIN W20 [get_ports {okUHU[17]}]
-set_property PACKAGE_PIN Y21 [get_ports {okUHU[18]}]
-set_property PACKAGE_PIN U18 [get_ports {okUHU[30]}]
+
 ## ####################################################################################################################################################################################################
 ##                            Copyright (C) 2021#2030 Paul Marbeau, IRAP Toulouse.
 ## ####################################################################################################################################################################################################
@@ -47,6 +32,18 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS True [current_design]
 
 ############################################################################
+## Board version interface
+############################################################################
+set_property PACKAGE_PIN Y13 [get_ports {board_version[0]}]
+set_property PACKAGE_PIN AA14 [get_ports {board_version[1]}]
+set_property PACKAGE_PIN AA13 [get_ports {board_version[2]}]
+set_property PACKAGE_PIN AB13 [get_ports {board_version[3]}]
+set_property PACKAGE_PIN W15 [get_ports {board_version[4]}]
+set_property PACKAGE_PIN W16 [get_ports {board_version[5]}]
+set_property PACKAGE_PIN AA16 [get_ports {board_version[6]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {board_version[*]}]
+
+############################################################################
 ## FrontPanel Host Interface
 ############################################################################
 set_property PACKAGE_PIN Y19 [get_ports {okHU[0]}]
@@ -78,6 +75,22 @@ set_property PACKAGE_PIN R21 [get_ports {okUHU[12]}]
 set_property PACKAGE_PIN P21 [get_ports {okUHU[13]}]
 set_property PACKAGE_PIN R22 [get_ports {okUHU[14]}]
 set_property PACKAGE_PIN P22 [get_ports {okUHU[15]}]
+set_property PACKAGE_PIN P15 [get_ports {okUHU[28]}]
+set_property PACKAGE_PIN U20 [get_ports {okUHU[20]}]
+set_property PACKAGE_PIN N17 [get_ports {okUHU[21]}]
+set_property PACKAGE_PIN N14 [get_ports {okUHU[22]}]
+set_property PACKAGE_PIN V20 [get_ports {okUHU[23]}]
+set_property PACKAGE_PIN P16 [get_ports {okUHU[24]}]
+set_property PACKAGE_PIN T18 [get_ports {okUHU[25]}]
+set_property PACKAGE_PIN V19 [get_ports {okUHU[26]}]
+set_property PACKAGE_PIN AB20 [get_ports {okUHU[27]}]
+set_property PACKAGE_PIN P17 [get_ports {okUHU[19]}]
+set_property PACKAGE_PIN V22 [get_ports {okUHU[29]}]
+set_property PACKAGE_PIN AB18 [get_ports {okUHU[31]}]
+set_property PACKAGE_PIN R14 [get_ports {okUHU[16]}]
+set_property PACKAGE_PIN W20 [get_ports {okUHU[17]}]
+set_property PACKAGE_PIN Y21 [get_ports {okUHU[18]}]
+set_property PACKAGE_PIN U18 [get_ports {okUHU[30]}]
 set_property SLEW FAST [get_ports {okUHU[*]}]
 set_property IOSTANDARD LVCMOS18 [get_ports {okUHU[*]}]
 

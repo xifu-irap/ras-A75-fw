@@ -86,7 +86,11 @@ entity row_addressing is
         o_dac_sync_row_high_n      : out STD_LOGIC;
         o_dac_sync_cluster_low_n   : out STD_LOGIC;
         o_dac_sync_cluster_high_n  : out STD_LOGIC
-           );
+
+    ----------------- Board version --------------------
+    board_version   : in std_logic_vector(6 downto 0);    
+
+    );
 end row_addressing;
 
 architecture Behavioral of row_addressing is
@@ -323,7 +327,7 @@ begin
 ------- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
 Version.Firmware_id <= x"0017";
 ------- TO BE CHANGED ACCORDING TO THE HARDWARE VERSION -----
-Version.RAS_board_id <= x"0000";
+Version.RAS_board_id <= board_version;
 -------------------------------------------------------------
 
 Cmd_param_1.Resetn <= reception_param(31); 
