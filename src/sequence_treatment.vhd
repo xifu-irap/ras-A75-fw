@@ -49,127 +49,91 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity sequence_treatment is
-    Port ( i_clk : in STD_LOGIC;
-           i_clk_row_enable : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
-           i_REV : in STD_LOGIC_VECTOR(3 downto 0);
-           i_first_row : in STD_LOGIC; -- = Cmd_row.Row(0) 
-           i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-           o_sig_overlap : out STD_LOGIC;
-           o_sig_sync : out STD_LOGIC);
+    Port (
+        i_clk : in STD_LOGIC;
+        i_clk_row_enable : in STD_LOGIC;
+        i_rst_n : in STD_LOGIC;
+        i_sync_lasting_row : in STD_LOGIC;          -- Sync (during Trow)
+        i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
+        i_REV : in STD_LOGIC_VECTOR(3 downto 0);
+        i_first_row : in STD_LOGIC; -- = Cmd_row.Row(0) 
+        i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
+        o_sig_overlap : out STD_LOGIC;
+        o_sig_sync : out STD_LOGIC -- not used
+        ); 
 end sequence_treatment;
 
 architecture Behavioral of sequence_treatment is
 
-COMPONENT read_5MHz
-    PORT(
-         i_clk : IN  std_logic;
-         i_clk_row_enable : in STD_LOGIC;
-         i_rst_n : IN  std_logic;
-         i_cmd : IN  std_logic_vector(39 downto 0);
-         i_NRO : IN std_logic_vector(5 downto 0);
-         o_seq_5MHz : OUT  std_logic
+COMPONENT read_5MHz_slave
+    PORT (
+        i_clk : IN  std_logic;
+        i_clk_row_enable : in STD_LOGIC;
+        i_sync_lasting_row : in STD_LOGIC;          -- Sync (during Trow)
+        i_rst_n : IN  std_logic;
+        i_cmd : IN  std_logic_vector(39 downto 0);
+        i_NRO : IN std_logic_vector(5 downto 0);
+        o_seq_5MHz : OUT  std_logic
         );
-    END COMPONENT;
+END COMPONENT;
 
 COMPONENT shift_register_15b
-    PORT(
+    PORT (
          i_clk : IN  std_logic;
          i_rst_n : IN  std_logic;
          i_seq_5MHz : IN  std_logic;
-         o_sig_late : OUT  std_logic_vector(14 downto 0)
+         o_sig_delayed : OUT  std_logic_vector(14 downto 0)
         );
-    END COMPONENT;
-	 
-    component mux_overlap_neg is
-    Port ( i_clk : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_sig_late : in std_logic_vector(14 downto 0);
-           i_REV : in STD_LOGIC_VECTOR (3 downto 0);
-           o_sig : out STD_LOGIC);
-    end component;
-    
-    component mux_overlap_pos is
-    Port ( i_clk : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_sig_late : in std_logic_vector(14 downto 0);
-           i_REV : in STD_LOGIC_VECTOR (3 downto 0);
-           o_sig : out STD_LOGIC);
-    end component;
-    
-    component mux_overlap is
-    Port ( i_clk : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_REV : in STD_LOGIC_VECTOR(3 downto 0);
-           i_overlap_neg : in STD_LOGIC;
-           i_overlap_pos : in STD_LOGIC;
-           o_sig_overlap : out STD_LOGIC
-           );
-    end component;
+END COMPONENT;
+	     
+component mux_overlap is
+    Port (
+        i_clk : in STD_LOGIC;
+        i_rst_n : in STD_LOGIC;
+        i_REV : in STD_LOGIC_VECTOR(3 downto 0);
+        i_sig_t0 : in STD_LOGIC;
+        i_sig_delayed : in STD_LOGIC_VECTOR(14 downto 0);
+        o_sig_overlap : out STD_LOGIC
+        );
+end component;
 
 
 ----------- Intern signals -----------------
 --signal clk_en_5M : std_logic;
 signal seq_5MHz : std_logic;
-signal sig_late : std_logic_vector(14 downto 0);
-signal sig_neg : std_logic;
-signal sig_pos : std_logic;
-signal overlap_neg : std_logic;
-signal overlap_pos : std_logic;
+signal sig_delayed : std_logic_vector(14 downto 0);
 
-alias sig_t0 : std_logic is sig_late(8); --sig_t0 is sig_late(7) but the process with the mux delays the signal choosen for overlap of one clk period
+alias sig_t0 : std_logic is sig_delayed(7);
    
 begin
 
 -- instantiation of the modules
 
-uu0: read_5MHz PORT MAP (  -- Read of each bit of the sequence at 5 MHz
-          i_clk => i_clk,
-          i_clk_row_enable => i_clk_row_enable,
-          i_rst_n => i_rst_n,
-          i_cmd => i_cmd,
-          i_NRO => i_NRO,
-          o_seq_5MHz => seq_5MHz
-        );
+uu0: read_5MHz_slave PORT MAP (  -- Read the bits of the sequence at Frow
+    i_clk => i_clk,
+    i_clk_row_enable => i_clk_row_enable,
+    i_sync_lasting_row => i_sync_lasting_row,          -- Sync (during Trow)
+    i_rst_n => i_rst_n,
+    i_cmd => i_cmd,
+    i_NRO => i_NRO,
+    o_seq_5MHz => seq_5MHz
+    );
 
-uu1: shift_register_15b PORT MAP ( -- Creation of delays
-           i_clk => i_clk,
-           i_rst_n => i_rst_n,
-           i_seq_5MHz => seq_5MHz,
-           o_sig_late => sig_late
-           );
-		  
-uu2 : mux_overlap_neg PORT MAP ( -- Select the early signal according to REV
-           i_clk => i_clk,
-           i_rst_n => i_rst_n,
-           i_sig_late => sig_late,
-           i_REV => i_REV,
-           o_sig => sig_neg
-           );
+uu1: shift_register_15b PORT MAP ( -- Creation of delays (for overlap)
+    i_clk => i_clk,
+    i_rst_n => i_rst_n,
+    i_seq_5MHz => seq_5MHz,
+    o_sig_delayed => sig_delayed
+    );
 
-overlap_neg <= sig_t0 and sig_neg; -- the negativ overlap signal is the result of the t0 signal AND the choosen late signal 
-        
-uu3 : mux_overlap_pos PORT MAP ( -- Select the delayed signal according to REV
-           i_clk => i_clk,
-           i_rst_n => i_rst_n,
-           i_sig_late => sig_late,
-           i_REV => i_REV,
-           o_sig => sig_pos
-           );
-
-overlap_pos <= sig_t0 or sig_pos; -- the positiv overlap signal is the result of the t0 signal OR the choosen late signal 
-
-
-uu4 : mux_overlap PORT MAP ( -- Select the positive or the negativ overlap according to REV
-           i_clk => i_clk,
-           i_rst_n => i_rst_n,
-           i_REV => i_REV,
-           i_overlap_neg => overlap_neg,
-           i_overlap_pos => overlap_pos,
-           o_sig_overlap => o_sig_overlap
-           );
-
+uu2 : mux_overlap PORT MAP ( -- Select the positive or the negativ overlap according to REV
+    i_clk => i_clk,
+    i_rst_n => i_rst_n,
+    i_REV => i_REV,
+    i_sig_t0 => sig_t0,
+    i_sig_delayed => sig_delayed,
+    o_sig_overlap => o_sig_overlap
+    );
 
 P_sync_process : process(i_clk,i_rst_n) -- process that manages the sig sync of each row
 begin
@@ -177,7 +141,7 @@ begin
         o_sig_sync <= '0';
     elsif rising_edge(i_clk) then
         if i_first_row = '1' then -- if the row is the first row activated
-            o_sig_sync <= sig_late(8); -- the sync signal takes the value of the reference signal (sig_late(7) = t0)
+            o_sig_sync <= sig_delayed(8); -- the sync signal takes the value of the reference signal (sig_delayed(7) = t0)
         else -- if the row isn't the first row activated
             o_sig_sync <= '1'; -- the sync signal is always at '1'
         end if;

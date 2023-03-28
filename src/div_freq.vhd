@@ -52,7 +52,7 @@ entity div_freq is
     Port ( i_clk : in STD_LOGIC;
            i_rst_n : in STD_LOGIC;
            i_line_period : in STD_LOGIC_VECTOR;
-           clk_5_enable : out STD_LOGIC);
+           clk_row_en : out STD_LOGIC);
 end div_freq;
 
 architecture Behavioral of div_freq is
@@ -65,14 +65,14 @@ P_div_freq : process(i_clk, i_rst_n)
 begin
     if i_rst_n = '0' then
         cmp <= (others => '0');
-        clk_5_enable <= '0';
+        clk_row_en <= '0';
     elsif (rising_edge(i_clk)) then
-        if cmp = unsigned(i_line_period) then -- we divide the main clock frequence by the frequence we want
+        if cmp = unsigned(i_line_period) then
             cmp <= (others => '0');
-            clk_5_enable <= '1';
+            clk_row_en <= '1';
         else
             cmp <= cmp + 1;
-            clk_5_enable <= '0';
+            clk_row_en <= '0';
         end if;
     end if;    
 end process;

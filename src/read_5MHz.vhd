@@ -52,7 +52,7 @@ entity read_5MHz is
     Port 
         ( 
         i_clk : in STD_LOGIC;                       -- system clock
-        i_clk_row_enable : in STD_LOGIC;                 -- gate at 5MHz for system clock
+        i_clk_row_enable : in STD_LOGIC;            -- clk row
         i_rst_n : in STD_LOGIC;
         i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
@@ -81,8 +81,8 @@ begin
                 o_seq_5MHz <= '0'; -- all the output driving signals = 0
         
             elsif (counter < unsigned(i_NRO)-1 and counter < 39) then -- while counter < i_NRO or < 40 we read the sequence
-                cmd_int <= cmd_int(0) & cmd_int(39 downto 1); --rotation of the vector every 200 ns
-                o_seq_5MHz <= cmd_int(0); --reading of the bit 0 (this bit change every 200 ns because of the previous rotation)
+                cmd_int <= cmd_int(0) & cmd_int(39 downto 1); -- rotation of the vector every Trow
+                o_seq_5MHz <= cmd_int(0); -- reading of the bit 0
                 counter <= counter + 1;
                 
             else -- when counter >= i_NRO or >= 40 we start the sequence from te beginning
