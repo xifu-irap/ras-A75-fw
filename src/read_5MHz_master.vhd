@@ -62,23 +62,25 @@ end read_5MHz_master;
 
 architecture Behavioral of read_5MHz_master is
 
-signal counter : unsigned(5 downto 0);
+--signal counter : unsigned(5 downto 0);
+signal counter : natural;
 
 begin
 
 P_counter : process(i_clk, i_rst_n)
 begin
     if (i_rst_n = '0') then
-        counter <= "000000";
+        counter <= 0;
 
     elsif (rising_edge(i_clk)) then
         if (i_clk_row_enable = '1') then         
 
             if (counter < unsigned(i_NRO)-1 and counter < 39) then
                 counter <= counter + 1;
-            elsif
-                counter <= "000000";
+            else
+                counter <= 0;
             end if;
+        end if;
 
     end if;
 

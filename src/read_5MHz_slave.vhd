@@ -63,23 +63,24 @@ end read_5MHz_slave;
 
 architecture Behavioral of read_5MHz_slave is
 
-signal counter : unsigned(5 downto 0);
+signal counter : natural;
 
 begin
 
     P_counter : process(i_clk, i_rst_n)
     begin
         if (i_rst_n = '0') then
-            counter <= "000000";
+            counter <= 0;
     
         elsif (rising_edge(i_clk)) then
             if (i_clk_row_enable = '1') then         
     
                 if (i_sync_lasting_row = '0') then
                     counter <= counter + 1;
-                elsif
-                    counter <= "000000";
+                else
+                    counter <= 0;
                 end if;
+            end if;
     
         end if;
     

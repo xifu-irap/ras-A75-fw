@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 No�mie ROLLAND, IRAP Toulouse.
 --This file is part of the ATHENA X-IFU DRE RAS.
 --ras-a75-fw is free software: you can redistribute it and/or modifyit under the terms of the GNU General Public 
 --License as published bythe Free Software Foundation, either version 3 of the License, or(at your option) any 
@@ -584,11 +584,11 @@ begin
                     HK_value <= "000000000000000000000000" & Cmd_row.Row5(39 downto 32);
                     trigHK<= '1';
                 elsif addr="0001000000" then
-                HK_value <= Cmd_row.Row6(31 downto 0);
-                trigHK<= '1';
+                    HK_value <= Cmd_row.Row6(31 downto 0);
+                    trigHK<= '1';
                 elsif addr="0001000100" then
-                HK_value <= "000000000000000000000000" & Cmd_row.Row6(39 downto 32);
-                trigHK<= '1';
+                    HK_value <= "000000000000000000000000" & Cmd_row.Row6(39 downto 32);
+                    trigHK<= '1';
                 elsif addr="0001001000" then 
                     HK_value <= Cmd_row.Row7(31 downto 0);
                     trigHK<= '1';
@@ -676,6 +676,7 @@ begin
                 o_sig_state <= "0100";
                 if (fifoIn_empty = '0') then --if the fifo is not empty
                     fifoIn_read_en <= '1'; --we read in the fifo
+                    num_row <= to_integer(addr-1)/8 - 2; 
                     state <= data_reception;
                 else -- if the fifo is empty we wait until it's not
                     state <= waiting;
@@ -700,7 +701,6 @@ begin
                             state <= idle;
                                                     
                         elsif (addr(9 downto 2) >= "00000100" and addr(9 downto 2) < "00100100") then -- row X
-                            num_row <= to_integer(addr-1)/8 - 2; 
                             if (addr(2)='0') then --address of the row LSB
                                 reception_cmd(num_row)(31 downto 0) <= fifoIn_dout_128b(87 downto 80) & fifoIn_dout_128b(71 downto 64) & fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                                 state <= idle;
@@ -713,15 +713,15 @@ begin
                             reception_param(95 downto 64) <= fifoIn_dout_128b(87 downto 80) & fifoIn_dout_128b(71 downto 64) & fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                             state <= idle;
 
-                        elsif (addr(9 downto 2) >= "00100101") then -- Mode
+                        elsif (addr(9 downto 2) = "00100101") then -- Mode
                             reception_mode <= fifoIn_dout_128b(96);
                             state <= idle;
 
-                        elsif (addr(9 downto 2) = "00100110") then -- Dac_row_low                    
+                        elsif (addr(9 downto 2) = "00100110") then -- Dac_pixel_low                    
                             reception_DAC(16 downto 1) <=  fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                             state <= idle;
 
-                        elsif (addr(9 downto 2) = "00100111") then -- Dac_row_high                    
+                        elsif (addr(9 downto 2) = "00100111") then -- Dac_pixel_high                    
                             reception_DAC(32 downto 17) <=  fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                             state <= idle;
 

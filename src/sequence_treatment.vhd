@@ -100,6 +100,7 @@ end component;
 --signal clk_en_5M : std_logic;
 signal seq_5MHz : std_logic;
 signal sig_delayed : std_logic_vector(14 downto 0);
+signal int_sig_overlap : std_logic;
    
 begin
 
@@ -127,7 +128,9 @@ uu2 : mux_overlap PORT MAP ( -- Select the positive or the negativ overlap accor
     i_rst_n => i_rst_n,
     i_REV => i_REV,
     i_sig_delayed => sig_delayed,
-    o_sig_overlap => o_sig_overlap
+    o_sig_overlap => int_sig_overlap
     );
+
+o_sig_overlap <= int_sig_overlap;
 
 end Behavioral;

@@ -80,7 +80,7 @@ signal sig_late         : std_logic_vector(0 downto 0);
 signal rst              : std_logic;
 signal seq_early        : std_logic_vector(0 downto 0);
 signal data_valid       : std_logic;
-signal clk_row_enable   : std_logic_vector(4 downto 0);
+signal counter          : natural;
 
 
 begin
@@ -98,27 +98,20 @@ uu0: read_5MHz_master PORT MAP
     );
 o_long_sync <= seq_5MHz_long;
 
--- This process delays the clk_row_clock by 4 clock periods
--- This is to gate the synchronisation signal
-P_clkrow_delay : process(i_clk, i_rst_n)
-begin
-    if (i_rst_n = '0') then
-        clk_row_enable(4 downto 0) <= "00000";
-    elsif (rising_edge(i_clk)) then 
-        clk_row_enable(4 downto 0) <= clk_row_enable(3 downto 0) & i_clk_row_enable;
-    end if;
-end process;
-
 -- This process gates the synchronisation signal (few clock periods only)
 P_sync_duration : process(i_clk, i_rst_n)
 begin
     if (i_rst_n = '0') then
+        counter <= 0;
         seq_5MHz <= '0';
     elsif (rising_edge(i_clk)) then
-        if (clk_row_enable(0) = '1') then
-            seq_5MHz <= seq_5MHz_long;
-        elsif (clk_row_enable(4) = '1') then
+        if (i_clk_row_enable = '1' and seq_5MHz_long = '1') then
+            counter <= 0;
+            seq_5MHz <= '1';
+        elsif (counter > 4) then
             seq_5MHz <= '0';
+        else 
+           counter <= counter + 1;
         end if;
     end if;
 end process;
