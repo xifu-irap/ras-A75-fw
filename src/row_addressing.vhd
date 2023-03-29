@@ -87,7 +87,7 @@ entity row_addressing is
         o_dac_sync_cluster_high_n  : out STD_LOGIC
 
         ----------------- Board version --------------------
-        board_version   : in std_logic_vector(6 downto 0);
+--        board_version   : in std_logic_vector(6 downto 0)
     );
 end row_addressing;
 
@@ -301,7 +301,7 @@ signal HK_value : std_logic_vector(31 downto 0);
 
 --------------- Synchronisation signal ------------------
 signal sig_sync : std_logic_vector(15 downto 0);  -- not used
-signal sync_lasting_trow : std_logic;
+signal sync_lasting_row : std_logic;
 
 signal test : std_logic;
 
@@ -335,7 +335,8 @@ begin
 ----- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
 Version.Firmware_id <= x"0018";
 ----------- READ BY THE FPGA FROM THE INPUTS  -------------
-Version.RAS_board_id <= board_version;
+--Version.RAS_board_id <= board_version;
+Version.RAS_board_id <= "0000000";
 
 Cmd_param_1.Resetn <= reception_param(31); 
 Cmd_param_1.LMK <= reception_param(30);
@@ -1050,7 +1051,7 @@ sequencer_sync: sequence_treatment_synchro PORT MAP (
     i_NRO => Cmd_param_2.NRO,
     i_DEL => Cmd_param_2.DEL(7 downto 0),
     o_sig_late => sig_overlap15_int,
-    o_long_sync => sync_lasting_trow
+    o_long_sync => sync_lasting_row
     );
 o_synchro <= sig_overlap15_int;
 

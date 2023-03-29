@@ -64,7 +64,6 @@ end read_5MHz_slave;
 architecture Behavioral of read_5MHz_slave is
 
 signal cmd_int : std_logic_vector(39 downto 0);
-signal counter : unsigned(5 downto 0);
 
 begin
 
@@ -74,7 +73,6 @@ begin
     -- intitialisation of the signals during the reset
         o_seq_5MHz <= '0';
         cmd_int <= i_cmd; --the command sequence is stored in an intern signal
-        counter <= "000000";
 
     elsif (rising_edge(i_clk)) then   
         if (i_clk_row_enable = '1') then         
@@ -84,12 +82,10 @@ begin
             elsif (i_sync_lasting_row = '1') then -- synchronizing all the address sequences
                 cmd_int <= i_cmd;
                 o_seq_5MHz <= cmd_int(0); 
-                counter <= "000000";  
          
-            else (counter < unsigned(i_NRO)-1 and counter < 39) then -- while counter < i_NRO or < 40 we read the sequence
+            else 
                 cmd_int <= cmd_int(0) & cmd_int(39 downto 1); -- rotation of the vector every Trow
                 o_seq_5MHz <= cmd_int(0); -- reading of the bit 0
-                counter <= counter + 1;
                                 
             end if;  
         

@@ -119,6 +119,7 @@ begin
             seq_5MHz <= seq_5MHz_long;
         elsif (clk_row_enable(4) = '1') then
             seq_5MHz <= '0';
+        end if;
     end if;
 end process;
 
