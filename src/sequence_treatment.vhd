@@ -59,7 +59,6 @@ entity sequence_treatment is
         i_first_row : in STD_LOGIC; -- = Cmd_row.Row(0) 
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
         o_sig_overlap : out STD_LOGIC;
-        o_sig_sync : out STD_LOGIC -- not used
         ); 
 end sequence_treatment;
 
@@ -91,7 +90,6 @@ component mux_overlap is
         i_clk : in STD_LOGIC;
         i_rst_n : in STD_LOGIC;
         i_REV : in STD_LOGIC_VECTOR(3 downto 0);
-        i_sig_t0 : in STD_LOGIC;
         i_sig_delayed : in STD_LOGIC_VECTOR(14 downto 0);
         o_sig_overlap : out STD_LOGIC
         );
@@ -102,8 +100,6 @@ end component;
 --signal clk_en_5M : std_logic;
 signal seq_5MHz : std_logic;
 signal sig_delayed : std_logic_vector(14 downto 0);
-
-alias sig_t0 : std_logic is sig_delayed(7);
    
 begin
 
@@ -130,22 +126,8 @@ uu2 : mux_overlap PORT MAP ( -- Select the positive or the negativ overlap accor
     i_clk => i_clk,
     i_rst_n => i_rst_n,
     i_REV => i_REV,
-    i_sig_t0 => sig_t0,
     i_sig_delayed => sig_delayed,
     o_sig_overlap => o_sig_overlap
     );
-
-P_sync_process : process(i_clk,i_rst_n) -- process that manages the sig sync of each row
-begin
-    if i_rst_n = '0' then
-        o_sig_sync <= '0';
-    elsif rising_edge(i_clk) then
-        if i_first_row = '1' then -- if the row is the first row activated
-            o_sig_sync <= sig_delayed(8); -- the sync signal takes the value of the reference signal (sig_delayed(7) = t0)
-        else -- if the row isn't the first row activated
-            o_sig_sync <= '1'; -- the sync signal is always at '1'
-        end if;
-    end if;
-end process;
 
 end Behavioral;

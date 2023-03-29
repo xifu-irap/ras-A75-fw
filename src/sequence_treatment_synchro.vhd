@@ -61,7 +61,7 @@ end sequence_treatment_synchro;
 
 architecture Behavioral of sequence_treatment_synchro is
 
-COMPONENT read_5MHz
+COMPONENT read_5MHz_master
     PORT (
     i_clk : IN  std_logic;
     i_clk_row_enable : in STD_LOGIC;
@@ -87,7 +87,7 @@ begin
 
 -- instantiation of the modules
 
-uu0: read_5MHz PORT MAP
+uu0: read_5MHz_master PORT MAP
     (  -- Read of each bit of the sequence at Frow
     i_clk => i_clk,
     i_clk_row_enable => i_clk_row_enable,

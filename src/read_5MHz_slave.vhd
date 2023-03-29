@@ -56,7 +56,7 @@ entity read_5MHz_slave is
         i_sync_lasting_row : in STD_LOGIC;          -- Sync (during Trow)
         i_rst_n : in STD_LOGIC;
         i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
-        i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
+        i_NRO : in STD_LOGIC_VECTOR (5 downto 0);
         o_seq_5MHz : out STD_LOGIC
         );
 end read_5MHz_slave;
@@ -70,14 +70,13 @@ begin
 P_read_process : process(i_clk, i_rst_n)
 begin
     if (i_rst_n = '0') then
-    -- intitialisation of the signals during the reset
         o_seq_5MHz <= '0';
         cmd_int <= i_cmd; --the command sequence is stored in an intern signal
 
     elsif (rising_edge(i_clk)) then   
         if (i_clk_row_enable = '1') then         
-            if i_NRO = "000000" then -- if the user doesn't want to read the sequence
-                o_seq_5MHz <= '0'; -- all the output driving signals = 0
+            if i_NRO = "000000" then -- sequence length is 0
+                o_seq_5MHz <= '0'; 
 
             elsif (i_sync_lasting_row = '1') then -- synchronizing all the address sequences
                 cmd_int <= i_cmd;
@@ -85,7 +84,7 @@ begin
          
             else 
                 cmd_int <= cmd_int(0) & cmd_int(39 downto 1); -- rotation of the vector every Trow
-                o_seq_5MHz <= cmd_int(0); -- reading of the bit 0
+                o_seq_5MHz <= cmd_int(0);
                                 
             end if;  
         

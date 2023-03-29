@@ -113,7 +113,6 @@ architecture Behavioral of row_addressing is
         i_first_row : in STD_LOGIC;
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
         o_sig_overlap : out STD_LOGIC;
-        o_sig_sync : out STD_LOGIC  -- not used
         );
     end component;
 
@@ -300,7 +299,6 @@ signal sig_overlap15_int : std_logic;
 signal HK_value : std_logic_vector(31 downto 0);
 
 --------------- Synchronisation signal ------------------
-signal sig_sync : std_logic_vector(15 downto 0);  -- not used
 signal sync_lasting_row : std_logic;
 
 signal test : std_logic;
@@ -333,9 +331,9 @@ begin
 --=========================================================
 
 ----- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
-Version.Firmware_id <= x"0018";
+Version.Firmware_id <= x"18";
 ----------- READ BY THE FPGA FROM THE INPUTS  -------------
-Version.RAS_board_id <= "000000000" & board_version;
+Version.RAS_board_id <= "0" & board_version;
 
 Cmd_param_1.Resetn <= reception_param(31); 
 Cmd_param_1.LMK <= reception_param(30);
@@ -667,7 +665,7 @@ begin
                     HK_value <= (0 => Cmd_DAC.start, others => '0');
                     trigHK<= '1';
                 elsif addr="0010101100" then
-                    HK_value <= Version.RAS_board_id & Version.Firmware_id;
+                    HK_value <= x"0000" & Version.RAS_board_id & Version.Firmware_id;
                     trigHK<= '1';
                 else
                     HK_value <= (others => '0');
@@ -678,7 +676,6 @@ begin
                 o_sig_state <= "0100";
                 if (fifoIn_empty = '0') then --if the fifo is not empty
                     fifoIn_read_en <= '1'; --we read in the fifo
-                    num_row <= to_integer(addr-1)/8 - 2; -- if the command is a row sequence, it searchs the number of the row
                     state <= data_reception;
                 else -- if the fifo is empty we wait until it's not
                     state <= waiting;
@@ -703,6 +700,7 @@ begin
                             state <= idle;
                                                     
                         elsif (addr(9 downto 2) >= "00000100" and addr(9 downto 2) < "00100100") then -- row X
+                            num_row <= to_integer(addr-1)/8 - 2; 
                             if (addr(2)='0') then --address of the row LSB
                                 reception_cmd(num_row)(31 downto 0) <= fifoIn_dout_128b(87 downto 80) & fifoIn_dout_128b(71 downto 64) & fifoIn_dout_128b(119 downto 112) & fifoIn_dout_128b(103 downto 96);
                                 state <= idle;
@@ -827,7 +825,6 @@ sequencer0: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row0(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap0_int,
-    o_sig_sync => sig_sync(0)  -- not used
     );
 o_sig_overlap0 <= sig_overlap0_int;
 
@@ -842,7 +839,6 @@ sequencer1: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row1(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap1_int,
-    o_sig_sync => sig_sync(1)  -- not used
     );
 o_sig_overlap1 <= sig_overlap1_int;
 
@@ -857,7 +853,6 @@ sequencer2: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row2(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap2_int,
-    o_sig_sync => sig_sync(2)  -- not used
     );
 o_sig_overlap2 <= sig_overlap2_int;
 
@@ -872,7 +867,6 @@ sequencer3: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row3(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap3_int,
-    o_sig_sync => sig_sync(3)  -- not used
     );
 o_sig_overlap3 <= sig_overlap3_int;
 
@@ -887,7 +881,6 @@ sequencer4: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row4(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap4_int,
-    o_sig_sync => sig_sync(4)  -- not used
     );
 o_sig_overlap4 <= sig_overlap4_int;
 
@@ -902,7 +895,6 @@ sequencer5: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row5(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap5_int,
-    o_sig_sync => sig_sync(5)  -- not used
     );
 o_sig_overlap5 <= sig_overlap5_int;
 
@@ -917,7 +909,6 @@ sequencer6: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row6(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap6_int,
-    o_sig_sync => sig_sync(6)  -- not used
     );
 o_sig_overlap6 <= sig_overlap6_int;
 
@@ -932,7 +923,6 @@ sequencer7: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row7(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap7_int,
-    o_sig_sync => sig_sync(7)  -- not used
     );
 o_sig_overlap7 <= sig_overlap7_int;
 
@@ -947,7 +937,6 @@ sequencer8: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row8(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap8_int,
-    o_sig_sync => sig_sync(8)  -- not used
     );
 o_sig_overlap8 <= sig_overlap8_int;
 
@@ -962,7 +951,6 @@ sequencer9: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row9(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap9_int,
-    o_sig_sync => sig_sync(9)  -- not used
     );
 o_sig_overlap9 <= sig_overlap9_int;
 
@@ -977,7 +965,6 @@ sequencer10: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row10(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap10_int,
-    o_sig_sync => sig_sync(10)  -- not used
     );
 o_sig_overlap10 <= sig_overlap10_int;
 
@@ -992,7 +979,6 @@ sequencer11: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row11(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap11_int,
-    o_sig_sync => sig_sync(11)  -- not used
     );
 o_sig_overlap11 <= sig_overlap11_int;
 
@@ -1007,7 +993,6 @@ sequencer12: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row12(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap12_int,
-    o_sig_sync => sig_sync(12)  -- not used
     );
 o_sig_overlap12 <= sig_overlap12_int;
 
@@ -1022,7 +1007,6 @@ sequencer13: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row13(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap13_int,
-    o_sig_sync => sig_sync(13)  -- not used
     );
 o_cluster_spare_1 <= sig_overlap13_int;
 
@@ -1037,7 +1021,6 @@ sequencer14: sequence_treatment PORT MAP (
     i_first_row => Cmd_row.Row14(0),
     i_NRO => Cmd_param_2.NRO,
     o_sig_overlap => sig_overlap14_int,
-    o_sig_sync => sig_sync(14)  -- not used
     );
 o_cluster_spare_2 <= sig_overlap14_int;
 
