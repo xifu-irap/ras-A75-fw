@@ -62,37 +62,28 @@ end read_5MHz_master;
 
 architecture Behavioral of read_5MHz_master is
 
-signal cmd_int : std_logic_vector(39 downto 0);
 signal counter : unsigned(5 downto 0);
 
 begin
 
-P_read_process : process(i_clk, i_rst_n)
+P_counter : process(i_clk, i_rst_n)
 begin
     if (i_rst_n = '0') then
-        o_seq_5MHz <= '0';
-        cmd_int <= i_cmd; --the command sequence is stored in an intern signal
         counter <= "000000";
 
-    elsif (rising_edge(i_clk)) then   
+    elsif (rising_edge(i_clk)) then
         if (i_clk_row_enable = '1') then         
-            if i_NRO = "000000" then -- sequence length is 0
-                o_seq_5MHz <= '0';
-        
-            elsif (counter < unsigned(i_NRO)-1 and counter < 39) then -- while counter < i_NRO or < 40 we read the sequence
-                cmd_int <= cmd_int(0) & cmd_int(39 downto 1); -- rotation of the vector every Trow
-                o_seq_5MHz <= cmd_int(0);
+
+            if (counter < unsigned(i_NRO)-1 and counter < 39) then
                 counter <= counter + 1;
-                
-            else -- when counter >= i_NRO or >= 40 we start the sequence from te beginning
-                cmd_int <= i_cmd;
-                o_seq_5MHz <= cmd_int(0); --reading of the bit 0 (this bit change every 200 ns because of the previous rotation)
-                counter <= "000000";  
-                
-            end if;  
-        
-        end if;
-   end if;
+            elsif
+                counter <= "000000";
+            end if;
+
+    end if;
+
 end process;
+
+o_seq_5MHz <= i_cmd(counter);
 
 end Behavioral;

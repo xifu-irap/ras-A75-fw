@@ -115,7 +115,7 @@ begin
     if (i_rst_n = '0') then
         seq_5MHz <= '0';
     elsif (rising_edge(i_clk)) then
-        if (i_clk_row_enable = '1') then
+        if (clk_row_enable(0) = '1') then
             seq_5MHz <= seq_5MHz_long;
         elsif (clk_row_enable(4) = '1') then
             seq_5MHz <= '0';

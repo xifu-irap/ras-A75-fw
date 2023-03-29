@@ -112,7 +112,7 @@ architecture Behavioral of row_addressing is
         i_REV : in STD_LOGIC_VECTOR (3 downto 0);
         i_first_row : in STD_LOGIC;
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-        o_sig_overlap : out STD_LOGIC;
+        o_sig_overlap : out STD_LOGIC
         );
     end component;
 
@@ -824,7 +824,7 @@ sequencer0: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row0(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap0_int,
+    o_sig_overlap => sig_overlap0_int
     );
 o_sig_overlap0 <= sig_overlap0_int;
 
@@ -838,7 +838,7 @@ sequencer1: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row1(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap1_int,
+    o_sig_overlap => sig_overlap1_int
     );
 o_sig_overlap1 <= sig_overlap1_int;
 
@@ -852,7 +852,7 @@ sequencer2: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row2(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap2_int,
+    o_sig_overlap => sig_overlap2_int
     );
 o_sig_overlap2 <= sig_overlap2_int;
 
@@ -866,7 +866,7 @@ sequencer3: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row3(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap3_int,
+    o_sig_overlap => sig_overlap3_int
     );
 o_sig_overlap3 <= sig_overlap3_int;
 
@@ -880,7 +880,7 @@ sequencer4: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row4(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap4_int,
+    o_sig_overlap => sig_overlap4_int
     );
 o_sig_overlap4 <= sig_overlap4_int;
 
@@ -894,7 +894,7 @@ sequencer5: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row5(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap5_int,
+    o_sig_overlap => sig_overlap5_int
     );
 o_sig_overlap5 <= sig_overlap5_int;
 
@@ -908,7 +908,7 @@ sequencer6: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row6(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap6_int,
+    o_sig_overlap => sig_overlap6_int
     );
 o_sig_overlap6 <= sig_overlap6_int;
 
@@ -922,7 +922,7 @@ sequencer7: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row7(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap7_int,
+    o_sig_overlap => sig_overlap7_int
     );
 o_sig_overlap7 <= sig_overlap7_int;
 
@@ -936,7 +936,7 @@ sequencer8: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row8(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap8_int,
+    o_sig_overlap => sig_overlap8_int
     );
 o_sig_overlap8 <= sig_overlap8_int;
 
@@ -950,7 +950,7 @@ sequencer9: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row9(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap9_int,
+    o_sig_overlap => sig_overlap9_int
     );
 o_sig_overlap9 <= sig_overlap9_int;
 
@@ -964,7 +964,7 @@ sequencer10: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row10(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap10_int,
+    o_sig_overlap => sig_overlap10_int
     );
 o_sig_overlap10 <= sig_overlap10_int;
 
@@ -978,7 +978,7 @@ sequencer11: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row11(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap11_int,
+    o_sig_overlap => sig_overlap11_int
     );
 o_sig_overlap11 <= sig_overlap11_int;
 
@@ -992,7 +992,7 @@ sequencer12: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row12(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap12_int,
+    o_sig_overlap => sig_overlap12_int
     );
 o_sig_overlap12 <= sig_overlap12_int;
 
@@ -1006,7 +1006,7 @@ sequencer13: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row13(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap13_int,
+    o_sig_overlap => sig_overlap13_int
     );
 o_cluster_spare_1 <= sig_overlap13_int;
 
@@ -1020,7 +1020,7 @@ sequencer14: sequence_treatment PORT MAP (
     i_REV => Cmd_param_1.REV,
     i_first_row => Cmd_row.Row14(0),
     i_NRO => Cmd_param_2.NRO,
-    o_sig_overlap => sig_overlap14_int,
+    o_sig_overlap => sig_overlap14_int
     );
 o_cluster_spare_2 <= sig_overlap14_int;
 

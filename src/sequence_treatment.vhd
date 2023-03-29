@@ -58,7 +58,7 @@ entity sequence_treatment is
         i_REV : in STD_LOGIC_VECTOR(3 downto 0);
         i_first_row : in STD_LOGIC; -- = Cmd_row.Row(0) 
         i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-        o_sig_overlap : out STD_LOGIC;
+        o_sig_overlap : out STD_LOGIC
         ); 
 end sequence_treatment;
 
