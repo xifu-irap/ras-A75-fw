@@ -84,10 +84,10 @@ entity row_addressing is
         o_dac_sync_row_low_n       : out STD_LOGIC;
         o_dac_sync_row_high_n      : out STD_LOGIC;
         o_dac_sync_cluster_low_n   : out STD_LOGIC;
-        o_dac_sync_cluster_high_n  : out STD_LOGIC
+        o_dac_sync_cluster_high_n  : out STD_LOGIC;
 
         ----------------- Board version --------------------
---        board_version   : in std_logic_vector(6 downto 0)
+        board_version   : in std_logic_vector(6 downto 0)
     );
 end row_addressing;
 
@@ -335,8 +335,7 @@ begin
 ----- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
 Version.Firmware_id <= x"0018";
 ----------- READ BY THE FPGA FROM THE INPUTS  -------------
---Version.RAS_board_id <= board_version;
-Version.RAS_board_id <= "0000000";
+Version.RAS_board_id <= "000000000" & board_version;
 
 Cmd_param_1.Resetn <= reception_param(31); 
 Cmd_param_1.LMK <= reception_param(30);

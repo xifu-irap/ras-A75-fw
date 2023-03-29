@@ -32,14 +32,14 @@ set_property BITSTREAM.GENERAL.COMPRESS True [current_design]
 ############################################################################
 ## Board version interface
 ############################################################################
-#set_property PACKAGE_PIN Y13 [get_ports {board_version[0]}]
-#set_property PACKAGE_PIN AA14 [get_ports {board_version[1]}]
-#set_property PACKAGE_PIN AA13 [get_ports {board_version[2]}]
-#set_property PACKAGE_PIN AB13 [get_ports {board_version[3]}]
-#set_property PACKAGE_PIN W15 [get_ports {board_version[4]}]
-#set_property PACKAGE_PIN W16 [get_ports {board_version[5]}]
-#set_property PACKAGE_PIN AA16 [get_ports {board_version[6]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {board_version[*]}]
+set_property PACKAGE_PIN Y13 [get_ports {board_version[0]}]
+set_property PACKAGE_PIN AA14 [get_ports {board_version[1]}]
+set_property PACKAGE_PIN AA13 [get_ports {board_version[2]}]
+set_property PACKAGE_PIN AB13 [get_ports {board_version[3]}]
+set_property PACKAGE_PIN W15 [get_ports {board_version[4]}]
+set_property PACKAGE_PIN W16 [get_ports {board_version[5]}]
+set_property PACKAGE_PIN AA16 [get_ports {board_version[6]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {board_version[*]}]
 
 ############################################################################
 ## FrontPanel Host Interface
