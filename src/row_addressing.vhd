@@ -434,29 +434,29 @@ generic map (
 )
 port map (
    -- Clock Outputs: 1-bit (each) output: User configurable clock outputs
-   CLKOUT0 => open,     -- 1-bit output: CLKOUT0
-   CLKOUT0B => open,   -- 1-bit output: Inverted CLKOUT0
-   CLKOUT1 => sys_clk,     -- 1-bit output: CLKOUT1
-   CLKOUT1B => open,   -- 1-bit output: Inverted CLKOUT1
-   CLKOUT2 => open,     -- 1-bit output: CLKOUT2
-   CLKOUT2B => open,   -- 1-bit output: Inverted CLKOUT2
-   CLKOUT3 => open,     -- 1-bit output: CLKOUT3
-   CLKOUT3B => open,   -- 1-bit output: Inverted CLKOUT3
-   CLKOUT4 => open,     -- 1-bit output: CLKOUT4
-   CLKOUT5 => open,     -- 1-bit output: CLKOUT5
-   CLKOUT6 => open,     -- 1-bit output: CLKOUT6
+   CLKOUT0 => open,         -- 1-bit output: CLKOUT0
+   CLKOUT0B => open,        -- 1-bit output: Inverted CLKOUT0
+   CLKOUT1 => sys_clk,      -- 1-bit output: CLKOUT1
+   CLKOUT1B => open,        -- 1-bit output: Inverted CLKOUT1
+   CLKOUT2 => open,         -- 1-bit output: CLKOUT2
+   CLKOUT2B => open,        -- 1-bit output: Inverted CLKOUT2
+   CLKOUT3 => open,         -- 1-bit output: CLKOUT3
+   CLKOUT3B => open,        -- 1-bit output: Inverted CLKOUT3
+   CLKOUT4 => open,         -- 1-bit output: CLKOUT4
+   CLKOUT5 => open,         -- 1-bit output: CLKOUT5
+   CLKOUT6 => open,         -- 1-bit output: CLKOUT6
    -- Feedback Clocks: 1-bit (each) output: Clock feedback ports
-   CLKFBOUT => CLKFBOUT,   -- 1-bit output: Feedback clock
-   CLKFBOUTB => open, -- 1-bit output: Inverted CLKFBOUT
+   CLKFBOUT => CLKFBOUT,    -- 1-bit output: Feedback clock
+   CLKFBOUTB => open,       -- 1-bit output: Inverted CLKFBOUT
    -- Status Ports: 1-bit (each) output: MMCM status ports
-   LOCKED => LOCKED,       -- 1-bit output: LOCK
+   LOCKED => LOCKED,        -- 1-bit output: LOCK
    -- Clock Inputs: 1-bit (each) input: Clock input
-   CLKIN1 => i_clk,       -- 1-bit input: Clock
+   CLKIN1 => i_clk,         -- 1-bit input: Clock
    -- Control Ports: 1-bit (each) input: MMCM control ports
-   PWRDWN => '0',       -- 1-bit input: Power-down
-   RST => '0',             -- 1-bit input: Reset
+   PWRDWN => '0',           -- 1-bit input: Power-down
+   RST => '0',              -- 1-bit input: Reset
    -- Feedback Clocks: 1-bit (each) input: Clock feedback ports
-   CLKFBIN => CLKFBOUT     -- 1-bit input: Feedback clock
+   CLKFBIN => CLKFBOUT      -- 1-bit input: Feedback clock
 );
 
 -- IBUFDS: Differential Input Buffer

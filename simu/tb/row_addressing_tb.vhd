@@ -55,36 +55,40 @@ architecture simulate of row_addressing_tb is
     component row_addressing
     Port ( 
     -------------- Opal Kelly Host Interface -----------
-    	  okUH      : in    std_logic_vector(4 downto 0);
-		  okHU      : out   std_logic_vector(2 downto 0);
-		  okUHU     : inout std_logic_vector(31 downto 0);
-		  okAA      : inout std_logic;
+    	okUH      : in    std_logic_vector(4 downto 0);
+		okHU      : out   std_logic_vector(2 downto 0);
+		okUHU     : inout std_logic_vector(31 downto 0);
+		okAA      : inout std_logic;
     
-          ok_clk_200p : in std_logic;
-          ok_clk_200n : in std_logic;
-          -- sys_clk : in std_logic;
-    ---------------------- RST -------------------------
-         -- i_rst : in std_logic;
+        ok_clk_200p : in std_logic;  -- OK clock at 200 MHz
+        ok_clk_200n : in std_logic;
+
+		i_clk    : in std_logic; -- Clock from the ICU at 62.5 MHz
+
+		---------------------- RST -------------------------
+        -- i_rst : in std_logic;
           
-    ----------------------- LED ------------------------
-        
-          led : out std_logic_vector(7 downto 0); -- on when '0', off when '1'
-    ----------------------- FAS ------------------------
-           o_sig_overlap0 : out STD_LOGIC;
-           o_sig_overlap1 : out STD_LOGIC;
-           o_sig_overlap2 : out STD_LOGIC;
-           o_sig_overlap3 : out STD_LOGIC;
-           o_sig_overlap4 : out STD_LOGIC;
-           o_sig_overlap5 : out STD_LOGIC;
-           o_sig_overlap6 : out STD_LOGIC;
-           o_sig_overlap7 : out STD_LOGIC;
-           o_sig_overlap8 : out STD_LOGIC;
-           o_sig_overlap9 : out STD_LOGIC;
-           o_sig_overlap10 : out STD_LOGIC;
-           o_sig_overlap11 : out STD_LOGIC;
-           o_sig_overlap12 : out STD_LOGIC;
-           o_synchro : out STD_LOGIC;
-           o_sig_state : out STD_LOGIC_VECTOR(3 downto 0);
+    	----------------------- LED ------------------------
+        led : out std_logic_vector(7 downto 0); -- on when '0', off when '1'
+
+    	----------------------- FAS ------------------------
+        o_sig_overlap0 : out STD_LOGIC;
+        o_sig_overlap1 : out STD_LOGIC;
+        o_sig_overlap2 : out STD_LOGIC;
+        o_sig_overlap3 : out STD_LOGIC;
+        o_sig_overlap4 : out STD_LOGIC;
+        o_sig_overlap5 : out STD_LOGIC;
+        o_sig_overlap6 : out STD_LOGIC;
+        o_sig_overlap7 : out STD_LOGIC;
+        o_sig_overlap8 : out STD_LOGIC;
+        o_sig_overlap9 : out STD_LOGIC;
+        o_sig_overlap10 : out STD_LOGIC;
+        o_sig_overlap11 : out STD_LOGIC;
+        o_sig_overlap12 : out STD_LOGIC;
+        o_cluster_spare_1 : out std_logic; 
+        o_cluster_spare_2 : out std_logic; 
+        o_synchro : out STD_LOGIC;
+
 		----------------------- DAC ------------------------     
 		o_dac_data                 : out STD_LOGIC;
 		o_dac_sclk                 : out STD_LOGIC;
@@ -92,6 +96,9 @@ architecture simulate of row_addressing_tb is
 		o_dac_sync_row_high_n      : out STD_LOGIC;
 		o_dac_sync_cluster_low_n   : out STD_LOGIC;
 		o_dac_sync_cluster_high_n  : out STD_LOGIC
+
+        ----------------- Board version --------------------
+        board_version   : in std_logic_vector(6 downto 0)
 		);
     end component;
 
@@ -99,6 +106,8 @@ architecture simulate of row_addressing_tb is
 signal okUH : std_logic_vector(4 downto 0) := (others => '0');
 signal i_clk : STD_LOGIC := '0';
 -- signal i_rst : STD_LOGIC := '0';
+
+signal board_version : std_logic_vector(6 downto 0) := '1010101';
 
 -- BiDirs
 signal okUHU : std_logic_vector(31 downto 0);
@@ -120,8 +129,9 @@ signal o_sig_overlap9 : STD_LOGIC;
 signal o_sig_overlap10 : STD_LOGIC;
 signal o_sig_overlap11 : STD_LOGIC;
 signal o_sig_overlap12 : STD_LOGIC;
+signal o_cluster_spare_1 : STD_LOGIC;
+signal o_cluster_spare_2 : STD_LOGIC;
 signal o_synchro : STD_LOGIC;
-signal o_sig_state : STD_LOGIC_VECTOR(3 downto 0); 
 signal o_dac_data                 : STD_LOGIC;
 signal o_dac_sclk                 : STD_LOGIC;
 signal o_dac_sync_row_low_n       : STD_LOGIC;
@@ -130,10 +140,10 @@ signal o_dac_sync_cluster_low_n   : STD_LOGIC;
 signal o_dac_sync_cluster_high_n  : STD_LOGIC;
 
 
-
 -- okHostCalls Simulation Parameters & Signals ----------------------------------------------
 	constant tCK        : time := 5 ns; --Half of the hi_clk frequency @ 1ns timing = 100MHz
-	constant Tsys_clk   : time := 2.5 ns; --Half of the hi_clk frequency @ 1ns timing = 100MHz
+	constant Tsys_clk   : time := 2.5 ns; -- Half of the sys_clk period => frequency = 200MHz
+	constant Ti_clk     : time := 2.5 ns; -- Half of the sys_clk period => frequency = 200MHz
 	
 	signal   hi_clk     : std_logic;
 	signal   hi_drive   : std_logic := '0';
@@ -147,50 +157,53 @@ signal o_dac_sync_cluster_high_n  : STD_LOGIC;
 	signal sys_clk : STD_LOGIC ;
 
 
-
 begin
 
     -- Instantiate the Unit Under Test (UUT)
     uut : row_addressing PORT MAP (
-          okUH      => okUH,
-		  okHU      => okHU,
-		  okUHU     => okUHU,
-		  okAA      => okAA,
-		  
-		  ok_clk_200p => ok_clk_200p,
-		  ok_clk_200n => ok_clk_200n,
-		  --sys_clk => sys_clk,
-    
-    ---------------------- RST -------------------------
-         -- i_rst => i_rst,
-    ----------------------- LED ------------------------
-          led => led,     
-    ----------------------- FAS ------------------------
-           --i_clk => i_clk,
-           o_sig_overlap0 => o_sig_overlap0,
-           o_sig_overlap1 => o_sig_overlap1,
-           o_sig_overlap2 => o_sig_overlap2,
-           o_sig_overlap3 => o_sig_overlap3,
-           o_sig_overlap4 => o_sig_overlap4,
-           o_sig_overlap5 => o_sig_overlap5,
-           o_sig_overlap6 => o_sig_overlap6,
-           o_sig_overlap7 => o_sig_overlap7,
-           o_sig_overlap8 => o_sig_overlap8,
-           o_sig_overlap9 => o_sig_overlap9,
-           o_sig_overlap10 => o_sig_overlap10,
-           o_sig_overlap11 => o_sig_overlap11,
-           o_sig_overlap12 => o_sig_overlap12,
-           o_synchro => o_synchro,
-	       o_sig_state => o_sig_state,
+        okUH      => okUH,
+		okHU      => okHU,
+		okUHU     => okUHU,
+		okAA      => okAA,
+		
+		ok_clk_200p => ok_clk_200p,
+		ok_clk_200n => ok_clk_200n,
 
-    ----------------------- DAC ------------------------ 
-	   o_dac_data                =>  o_dac_data                ,
-	   o_dac_sclk                =>  o_dac_sclk                ,
-	   o_dac_sync_row_low_n      =>  o_dac_sync_row_low_n      ,
-	   o_dac_sync_row_high_n     =>  o_dac_sync_row_high_n     ,
-	   o_dac_sync_cluster_low_n  =>  o_dac_sync_cluster_low_n  ,
-	   o_dac_sync_cluster_high_n => o_dac_sync_cluster_high_n
-           );
+		i_clk => i_clk,
+    
+    	---------------------- RST -------------------------
+        -- i_rst => i_rst,
+    	----------------------- LED ------------------------
+        led => led,     
+    	----------------------- FAS ------------------------
+        o_sig_overlap0 => o_sig_overlap0,
+        o_sig_overlap1 => o_sig_overlap1,
+        o_sig_overlap2 => o_sig_overlap2,
+        o_sig_overlap3 => o_sig_overlap3,
+        o_sig_overlap4 => o_sig_overlap4,
+        o_sig_overlap5 => o_sig_overlap5,
+        o_sig_overlap6 => o_sig_overlap6,
+        o_sig_overlap7 => o_sig_overlap7,
+        o_sig_overlap8 => o_sig_overlap8,
+        o_sig_overlap9 => o_sig_overlap9,
+        o_sig_overlap10 => o_sig_overlap10,
+        o_sig_overlap11 => o_sig_overlap11,
+        o_sig_overlap12 => o_sig_overlap12,
+        o_cluster_spare_1 => o_cluster_spare_1,
+        o_cluster_spare_2 => o_cluster_spare_2,
+        o_synchro => o_synchro,
+
+    	----------------------- DAC ------------------------ 
+	   	o_dac_data                =>  o_dac_data                ,
+	   	o_dac_sclk                =>  o_dac_sclk                ,
+	   	o_dac_sync_row_low_n      =>  o_dac_sync_row_low_n      ,
+	   	o_dac_sync_row_high_n     =>  o_dac_sync_row_high_n     ,
+	   	o_dac_sync_cluster_low_n  =>  o_dac_sync_cluster_low_n  ,
+	   	o_dac_sync_cluster_high_n => o_dac_sync_cluster_high_n	,
+
+		----------------- Board version --------------------
+		board_version   => board_version
+    );
 
 
 -- okHostCalls Simulation okHostCall<->okHost Mapping  --------------------------------------
@@ -203,6 +216,17 @@ begin
 	---------------------------------------------------------------------------------------------
 
    -- Clock process definitions
+	i_clk_gen : process is
+	begin
+		--i_clk <= '0';
+		i_clk <= '0';
+		wait for Ti_clk;
+		--i_clk <= '1';
+		i_clk <= '1';
+		wait for Ti_clk; 
+	end process sys_clk_gen;
+	
+
 	sys_clk_gen : process is
 	begin
 		--sys_clk <= '0';
