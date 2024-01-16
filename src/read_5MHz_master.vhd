@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noémie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
 
 --This file is part of the ATHENA X-IFU DRE RAS.
 
@@ -14,18 +14,18 @@
 --If not, see <https://www.gnu.org/licenses/>.
 
 --noemie.rolland@irap.omp.eu
---div_freq2.vhd
+--read_5MHz.vhd
 
 -- Company: IRAP
--- Engineer: Noémie Rolland
+-- Engineer: Noï¿½mie Rolland
 -- 
--- Create Date: 10.02.2021 09:30:27
+-- Create Date: 04.01.2021 14:44:32
 -- Design Name: 
--- Module Name: div_freq2 - Behavioral
--- Project Name: 
--- Target Devices: 
+-- Module Name: read_5MHz - Behavioral
+-- Project Name: RAS_simu
+-- Target Devices: Opal Kelly XEM7310 - Artix7 XC7A75T - 1FGG 484
 -- Tool Versions: 
--- Description: This module is a clock divider. It divides the clock frequency by 2.
+-- Description: This module reads bit by bit the input command every 200 ns.
 -- 
 -- Dependencies: 
 -- 
@@ -48,33 +48,44 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity div_freq2 is
-    Port ( sys_clk : in STD_LOGIC;
-           i_rst : in STD_LOGIC;
-           clk100M : out STD_LOGIC);
-end div_freq2;
+entity read_5MHz_master is
+    Port 
+        ( 
+        i_clk : in STD_LOGIC;                       -- system clock
+        i_clk_row_enable : in STD_LOGIC;            -- clk row
+        i_rst_n : in STD_LOGIC;
+        i_cmd : in STD_LOGIC_VECTOR (39 downto 0);
+        i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
+        o_seq_5MHz : out STD_LOGIC
+        );
+end read_5MHz_master;
 
-architecture Behavioral of div_freq2 is
+architecture Behavioral of read_5MHz_master is
 
-signal cmp : unsigned(1 downto 0);
+--signal counter : unsigned(5 downto 0);
+signal counter : natural;
 
 begin
 
-P_div_freq : process(sys_clk, i_rst)
+P_counter : process(i_clk, i_rst_n)
 begin
-    if i_rst = '1' then
-        cmp <= (others => '0');
-        clk100M <= '0';
-    elsif (rising_edge(sys_clk)) then
-        if cmp = 1 then
-            cmp <= (others => '0');
-            clk100M <= '1';
-        else
-            cmp <= cmp + 1;
-            clk100M <= '0';
+    if (i_rst_n = '0') then
+        counter <= 0;
+
+    elsif (rising_edge(i_clk)) then
+        if (i_clk_row_enable = '1') then         
+
+            if (counter < unsigned(i_NRO)-1 and counter < 39) then
+                counter <= counter + 1;
+            else
+                counter <= 0;
+            end if;
         end if;
+
     end if;
+
 end process;
-            
+
+o_seq_5MHz <= i_cmd(counter);
 
 end Behavioral;

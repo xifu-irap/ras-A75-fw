@@ -95,8 +95,8 @@ type t_Device_Ctrl_1
      
  type t_Version
     is record
-        Firmware_id : std_logic_vector(15 downto 0);
-        RAS_board_id : std_logic_vector(15 downto 0);
+    Firmware_id : std_logic_vector(7 downto 0);
+    RAS_board_id : std_logic_vector(7 downto 0);
     end record; 
 
  type t_DAC

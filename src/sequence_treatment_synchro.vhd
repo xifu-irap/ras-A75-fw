@@ -46,75 +46,93 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity sequence_treatment_synchro is
-    Port
-        (
-        i_clk : in STD_LOGIC;
-        i_clk_row_enable : in STD_LOGIC;
-        i_rst_n : in STD_LOGIC;
-        i_cmd : in STD_LOGIC_VECTOR(39 downto 0);
-        i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
-        i_DEL : in std_logic_vector(7 downto 0);
-        o_sig_late : out STD_LOGIC
-        );
+    Port (
+    i_clk : in STD_LOGIC;
+    i_clk_row_enable : in STD_LOGIC;
+    i_rst_n : in STD_LOGIC;
+    i_cmd : in STD_LOGIC_VECTOR(39 downto 0);
+    i_NRO : in STD_LOGIC_VECTOR(5 downto 0);
+    i_DEL : in std_logic_vector(7 downto 0);
+    o_sig_late : out STD_LOGIC;
+    o_long_sync : out STD_LOGIC
+    );
 end sequence_treatment_synchro;
 
 
 architecture Behavioral of sequence_treatment_synchro is
 
-COMPONENT read_5MHz_synchro
-    PORT
-        (
-        i_clk : IN  std_logic;
-        i_clk_row_enable : in STD_LOGIC;
-        i_rst_n : IN  std_logic;
-        i_cmd : IN  std_logic_vector(39 downto 0);
-        i_NRO : IN std_logic_vector(5 downto 0);
-        o_seq_5MHz : OUT  std_logic
+COMPONENT read_5MHz_master
+    PORT (
+        i_clk               : IN std_logic;
+        i_clk_row_enable    : in std_logic;
+        i_rst_n             : IN std_logic;
+        i_cmd               : IN std_logic_vector(39 downto 0);
+        i_NRO               : IN std_logic_vector(5 downto 0);
+        o_seq_5MHz          : OUT std_logic
+        );
+END COMPONENT;
+
+COMPONENT delay_mgt
+    PORT (
+		data_in  	: in std_logic;
+		clk  		: in std_logic;
+		i_rst_n     : in std_logic;
+		delay_value : in std_logic_vector(7 downto 0);
+		data_out	: out std_logic
         );
 END COMPONENT;
 
 ----------- Intern signals -----------------
-signal seq_5MHz   : std_logic;
-signal sig_late   : std_logic_vector(0 downto 0);
-signal rst        : std_logic;
-signal seq_early  : std_logic_vector(0 downto 0);
-signal data_valid : std_logic;
-   
+signal seq_5MHz         : std_logic;
+signal seq_5MHz_long    : std_logic;
+signal seq_5MHz_delayed : std_logic;
+signal seq_early        : std_logic_vector(0 downto 0);
+signal data_valid       : std_logic;
+signal counter          : natural;
+
+
 begin
 
 -- instantiation of the modules
 
-uu0: read_5MHz_synchro PORT MAP
-    (  -- Read of each bit of the sequence at 5 MHz
-          i_clk => i_clk,
-          i_clk_row_enable => i_clk_row_enable,
-          i_rst_n => i_rst_n,
-          i_cmd => i_cmd,
-          i_NRO => i_NRO,
-          o_seq_5MHz => seq_5MHz
+uu0: read_5MHz_master PORT MAP
+    (  -- Read of each bit of the sequence at Frow
+    i_clk => i_clk,
+    i_clk_row_enable => i_clk_row_enable,
+    i_rst_n => i_rst_n,
+    i_cmd => i_cmd,
+    i_NRO => i_NRO,
+    o_seq_5MHz => seq_5MHz_long
+    );
+o_long_sync <= seq_5MHz_long;
+
+-- This process gates the synchronisation signal (few clock periods only)
+P_sync_duration: process(i_clk, i_rst_n)
+begin
+    if (i_rst_n = '0') then
+        counter <= 0;
+        seq_5MHz <= '0';
+    elsif (rising_edge(i_clk)) then
+        if (i_clk_row_enable = '1' and seq_5MHz_long = '1') then
+            counter <= 0;
+            seq_5MHz <= '1';
+        elsif (counter > 4) then
+            seq_5MHz <= '0';
+        else 
+           counter <= counter + 1;
+        end if;
+    end if;
+end process;
+
+delay_mgt: delay_mgt PORT MAP
+    (	
+    data_in  	=> seq_5MHz,
+    clk  		=> i_clk,
+    i_rst_n     => i_rst_n,
+    delay_value => i_DEL,
+    data_out    => seq_5MHz_delayed
     );
 
-
-delay_mgt : entity work.delay_mgt
-    generic map 
-        (
-        data_size   => 1,                  -- Width of the data to store
-        dpram_depth => 256                 -- Depth of the DPRAM ! Must be > or = 64 !
-        )
-    port map 
-        (	
-        data_a  	=> seq_early,
-        data_b	    => seq_early,
-        clk  		=> i_clk,                           -- Clock for both ports 
-        rst         => rst,                             -- Reset to get the valid data
-        delay_value => i_DEL,                           -- Delay value
-        q_a	        => open,                            -- Data output for port A
-        q_b		    => sig_late,                        -- Data output for port B
-        data_valid  => data_valid
-        );
-
-seq_early(0) <= seq_5MHz; 	        
-o_sig_late <= sig_late(0) and data_valid;
-rst <= not(i_rst_n);
+o_sig_late <= seq_5MHz_delayed;
 
 end Behavioral;

@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noémie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
 
 --This file is part of the ATHENA X-IFU DRE RAS.
 
@@ -17,7 +17,7 @@
 --shift_register_15b.vhd
 
 -- Company: IRAP
--- Engineer: Noémie Rolland
+-- Engineer: Noï¿½mie Rolland
 -- 
 -- Create Date: 18.03.2021 15:31:26
 -- Design Name: 
@@ -53,26 +53,26 @@ entity shift_register_15b is
     Port ( i_clk : in STD_LOGIC; -- clk 100 MHz
            i_rst_n : in STD_LOGIC; -- reset active LOW
            i_seq_5MHz : in STD_LOGIC; -- output of the module "read_5MHz" 
-           o_sig_late : out STD_LOGIC_VECTOR (14 downto 0)); -- output of the module
+           o_sig_delayed : out STD_LOGIC_VECTOR (14 downto 0)); -- output of the module
 end shift_register_15b;
 
 architecture Behavioral of shift_register_15b is
 
 ----------- Intern signal -----------------
-signal sig_late_int : std_logic_vector(14 downto 0);
+signal sig_delayed_int : std_logic_vector(14 downto 0);
 
 begin
 
 P_register : process(i_clk, i_rst_n)
 begin
     if i_rst_n = '0' then
-        sig_late_int <= (others => '0');
+        sig_delayed_int <= (others => '0');
     elsif (rising_edge(i_clk)) then
-        sig_late_int <= sig_late_int(13 downto 0) & i_seq_5MHz; -- left shift of each bit each clock period
+        sig_delayed_int <= sig_delayed_int(13 downto 0) & i_seq_5MHz; -- left shift of each bit each clock period
     end if;
 end process;
 
-o_sig_late <= sig_late_int;
+o_sig_delayed <= sig_delayed_int;
 
 
 end Behavioral;

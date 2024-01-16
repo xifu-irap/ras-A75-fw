@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---Copyright (C) 2021-2030 Noémie ROLLAND, IRAP Toulouse.
+--Copyright (C) 2021-2030 Noï¿½mie ROLLAND, IRAP Toulouse.
 
 --This file is part of the ATHENA X-IFU DRE RAS.
 
@@ -50,33 +50,59 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity mux_overlap is
-    Port ( i_clk : in STD_LOGIC;
-           i_rst_n : in STD_LOGIC;
-           i_REV : in STD_LOGIC_VECTOR (3 downto 0);
-           i_overlap_neg : in STD_LOGIC;
-           i_overlap_pos : in STD_LOGIC;
-           o_sig_overlap : out STD_LOGIC);
+    Port (
+        i_clk : in STD_LOGIC;
+        i_rst_n : in STD_LOGIC;
+        i_REV : in STD_LOGIC_VECTOR (3 downto 0);
+        i_sig_delayed : in STD_LOGIC_VECTOR (14 downto 0);
+        o_sig_overlap : out STD_LOGIC
+        );
 end mux_overlap;
 
 architecture Behavioral of mux_overlap is
-
 begin
 
-P_mux_overlap : process(i_clk,i_rst_n)
-begin
-    if i_rst_n = '0' then
-        o_sig_overlap <= '0';
-    elsif rising_edge(i_clk) then
-        case i_REV(3) is
-            when '0' => -- if we want a positiv overlap
-                o_sig_overlap <= i_overlap_pos;
-            when '1' => -- if we want a negativ overlap
-                o_sig_overlap <= i_overlap_neg;
-            when others => -- if we don't specify the value of REV
-                o_sig_overlap <= '0';
-        end case;
-    end if;
-end process;
-
+    P_mux_pos : process(i_clk, i_rst_n)
+    begin
+        if i_rst_n = '0' then
+            o_sig_overlap <= '0';
+        elsif rising_edge(i_clk) then    
+            case i_REV(3 downto 0) is
+                when "0111" => -- for 7 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(14);
+                when "0110" => -- for 6 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(13);
+                when "0101" => -- for 5 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(12);
+                when "0100" => -- for 4 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(11);
+                when "0011" => -- for 3 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(10);
+                when "0010" => -- for 2 clock periods positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(9);
+                when "0001" => -- for 1 clock period positive overlap
+                    o_sig_overlap <= i_sig_delayed(7) or i_sig_delayed(8);
+                when "0000" => -- if we don't want any overlap
+                    o_sig_overlap <= i_sig_delayed(7);
+                when "1111" => -- for 1 clock period negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(6);
+                when "1110" => -- for 2 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(5);
+                when "1101" => -- for 3 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(4);
+                when "1100" => -- for 4 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(3);
+                when "1011" => -- for 5 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(2);
+                when "1010" => -- for 6 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(1);
+                when "1001" => -- for 7 clock periods negative overlap
+                    o_sig_overlap <= i_sig_delayed(7) and i_sig_delayed(0);
+                when others => -- if we don't specify a value for REV
+                    o_sig_overlap <= '0'; -- the signal is equal to 0
+            end case;
+        end if;   
+    
+    end process;
 
 end Behavioral;
