@@ -52,7 +52,7 @@ entity row_addressing is
         ok_clk_200p : in std_logic;  -- OK clock at 200 MHz
 		ok_clk_200n : in std_logic;
 
-        sys_clk    : out std_logic; -- Clock to the column electronics at 122.884 MHz
+        o_sys_clk    : out std_logic; -- Clock to the column electronics at 122.884 MHz
 
         ---------------------- RST -------------------------
           -- i_rst : in std_logic;
@@ -312,7 +312,7 @@ signal cmp : unsigned(25 downto 0);
 
 ---------------- PLL + Temporary clocks ---------------
 signal clk_200M : std_logic ; 
-signal sys_clk : std_logic ; -- 125 MHz
+signal sys_clk : std_logic ; -- 122.884 MHz
 signal CLKFBOUT : std_logic ; 
 signal LOCKED : std_logic;
 signal o_rst : std_logic ;
@@ -458,6 +458,8 @@ port map (
    -- Feedback Clocks: 1-bit (each) input: Clock feedback ports
    CLKFBIN => CLKFBOUT     -- 1-bit input: Feedback clock
 );
+
+o_sys_clk <= sys_clk;
 
 -- IBUFDS: Differential Input Buffer
 --         Artix-7

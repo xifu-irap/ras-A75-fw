@@ -244,8 +244,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {o_cluster_spare_1}]
 set_property PACKAGE_PIN AB7 [get_ports {o_sig_overlap10}]
 set_property IOSTANDARD LVCMOS33 [get_ports {o_sig_overlap10}]
 ## MC1-38
-set_property PACKAGE_PIN Y4 [get_ports {sys_clk}]
-set_property IOSTANDARD LVCMOS33 [get_ports {sys_clk}]
+set_property PACKAGE_PIN Y4 [get_ports {o_sys_clk}]
+set_property IOSTANDARD LVCMOS33 [get_ports {o_sys_clk}]
 ## MC1-39
 set_property PACKAGE_PIN AB6 [get_ports {o_sig_overlap9}]
 set_property IOSTANDARD LVCMOS33 [get_ports {o_sig_overlap9}]
