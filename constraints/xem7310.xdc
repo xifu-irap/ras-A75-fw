@@ -114,7 +114,7 @@ set_output_delay -clock [get_clocks okUH0] -min -add_delay -0.500 [get_ports {ok
 
 
 ############################################################################
-## System Clock
+## Opal Kelly Clock
 ############################################################################
 set_property IOSTANDARD LVDS_25 [get_ports ok_clk_200p]
 set_property IOSTANDARD LVDS_25 [get_ports ok_clk_200n]
@@ -123,8 +123,8 @@ set_property PACKAGE_PIN W12 [get_ports ok_clk_200n]
 
 set_property DIFF_TERM FALSE [get_ports ok_clk_200p]
 
-create_clock -period 5.000 -name sys_clk [get_ports ok_clk_200p]
-set_clock_groups -asynchronous -group [get_clocks sys_clk] -group [get_clocks {mmcm0_clk0 okUH0}]
+create_clock -period 5.000 -name ok_clk_200 [get_ports ok_clk_200p]
+set_clock_groups -asynchronous -group [get_clocks ok_clk_200] -group [get_clocks {mmcm0_clk0 okUH0}]
 
 ############################################################################
 ## User Reset
@@ -244,8 +244,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {o_cluster_spare_1}]
 set_property PACKAGE_PIN AB7 [get_ports {o_sig_overlap10}]
 set_property IOSTANDARD LVCMOS33 [get_ports {o_sig_overlap10}]
 ## MC1-38
-set_property PACKAGE_PIN Y4 [get_ports {i_clk}]
-set_property IOSTANDARD LVCMOS33 [get_ports {i_clk}]
+set_property PACKAGE_PIN Y4 [get_ports {sys_clk}]
+set_property IOSTANDARD LVCMOS33 [get_ports {sys_clk}]
 ## MC1-39
 set_property PACKAGE_PIN AB6 [get_ports {o_sig_overlap9}]
 set_property IOSTANDARD LVCMOS33 [get_ports {o_sig_overlap9}]
