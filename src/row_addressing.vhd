@@ -331,7 +331,7 @@ begin
 --=========================================================
 
 ----- TO BE CHANGED ACCORDING TO THE FIRMWARE VERSION -----
-Version.Firmware_id <= x"18";
+Version.Firmware_id <= x"1A";
 ----------- READ BY THE FPGA FROM THE INPUTS  -------------
 Version.RAS_board_id <= "0" & board_version;
 
