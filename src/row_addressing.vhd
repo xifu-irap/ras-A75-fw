@@ -400,7 +400,7 @@ s_rst <= rst_gen(rst_gen'left);
 MMCME2_BASE_inst : MMCME2_BASE
 generic map (
    BANDWIDTH => "OPTIMIZED",  -- Jitter programming (OPTIMIZED, HIGH, LOW)
-   CLKFBOUT_MULT_F => 24.5,    -- Multiply value for all CLKOUT (2.000-64.000).
+   CLKFBOUT_MULT_F => 49,    -- Multiply value for all CLKOUT (2.000-64.000).
    CLKFBOUT_PHASE => 0.0,     -- Phase offset in degrees of CLKFB (-360.000-360.000).
    CLKIN1_PERIOD => 5.0,      -- Input clock period in ns to ps resolution (i.e. 33.333 is 30 MHz).
    -- CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for each CLKOUT (1-128)
@@ -410,7 +410,7 @@ generic map (
    CLKOUT4_DIVIDE => 1,
    CLKOUT5_DIVIDE => 1,
    CLKOUT6_DIVIDE => 1,
-   CLKOUT0_DIVIDE_F => 3.625,   -- Divide amount for CLKOUT0 (1.000-128.000).
+   CLKOUT0_DIVIDE_F => 7.25,   -- Divide amount for CLKOUT0 (1.000-128.000).
    -- CLKOUT0_DUTY_CYCLE - CLKOUT6_DUTY_CYCLE: Duty cycle for each CLKOUT (0.01-0.99).
    CLKOUT0_DUTY_CYCLE => 0.5,
    CLKOUT1_DUTY_CYCLE => 0.5,
