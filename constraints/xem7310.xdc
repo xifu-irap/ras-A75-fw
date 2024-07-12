@@ -96,6 +96,9 @@ set_property PACKAGE_PIN N13 [get_ports okAA]
 set_property IOSTANDARD LVCMOS18 [get_ports okAA]
 
 
+###############################################################################################################
+# usb @100.8 MHz
+###############################################################################################################
 create_clock -period 9.920 -name okUH0 [get_ports {okUH[0]}]
 
 set_input_delay -clock [get_clocks okUH0] -max -add_delay 8.000 [get_ports {okUH[*]}]
